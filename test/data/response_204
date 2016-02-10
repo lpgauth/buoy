@@ -1,0 +1,6 @@
+<<"HTTP/1.1 204 No Content\r\n",
+  "server: Cowboy\r\n",
+  "date: Wed, 15 Feb 2017 01:47:43 GMT\r\n",
+  "content-length: 0\r\n",
+  "Content-Type: text/plain\r\n",
+  "Connection: Keep-Alive\r\n\r\n">>.

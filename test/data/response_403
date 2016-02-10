@@ -1,0 +1,9 @@
+<<"HTTP/1.1 403 Forbidden\r\n",
+  "Content-Type: application/xml\r\n",
+  "Date: Tue, 14 Feb 2017 12:39:52 GMT\r\n",
+  "P3P: CP=\"CAO DSP LAW CURa ADMa DEVa TAIa PSAa PSDa IVAa IVDa OUR BUS IND UNI COM NAV INT\"\r\n",
+  "Server: AmazonS3\r\n",
+  "x-amz-bucket-region: us-east-1\r\n",
+  "Content-Length: 243\r\n\r\n",
+
+"<?xml version=\"1.0\" encoding=\"UTF-8\"?>.<Error><Code>AccessDenied</Code><Message>Access Denied</Message><RequestId>78EBDFC1704228AB</RequestId><HostId>97RSC/NU5I/IckVPs09UZXxQypBH5MjDwPsvl4Gi7wTxxuRPXzk7TY7VWDaZrRf57gYZvM+u2Ds=</HostId></Error>">>.

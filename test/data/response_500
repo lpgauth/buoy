@@ -1,0 +1,5 @@
+<<"HTTP/1.1 500 Internal Server Error\r\n",
+  "Server: Cowboy\r\n",
+  "Date: Fri, 03 Jun 2016 14:34:26 GMT\r\n",
+  "Content-Length: 0\r\n",
+  "X-Server: ewr-delivery-6\r\n\r\n">>.

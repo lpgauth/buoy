@@ -1,0 +1,4 @@
+%% encoding: UTF-8
+{application,buoy}.
+{modules,[buoy,buoy_app,buoy_client,buoy_compiler,buoy_pool,buoy_protocol,
+          buoy_sup,buoy_utils]}.

@@ -1,0 +1,4 @@
+doc/README.md
+erl_crash.dump
+fprofx.*
+_build

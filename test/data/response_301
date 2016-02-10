@@ -1,0 +1,4 @@
+<<"HTTP/1.1 301 Moved Permanently\r\n",
+  "Location: https://myspace.com/\r\n",
+  "Connection: close\r\n",
+  "Cache-Control: no-cache\r\nPragma: no-cache\r\n\r\n">>.

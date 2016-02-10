@@ -1,0 +1,11 @@
+<<"HTTP/1.1 302 Found\r\n",
+  "Date: Mon, 13 Feb 2017 19:54:34 GMT\r\n",
+  "Server: Apache\r\n",
+  "Location: http://www.noaa.gov/\r\n",
+  "Vary: Accept-Encoding\r\n",
+  "Content-Length: 204\r\n",
+  "Content-Type: text/html; charset=iso-8859-1\r\n",
+  "Via: 1.0 c5.w2.woc (squid)\r\n",
+  "Connection: keep-alive\r\n\r\n",
+
+"<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">\n<html><head>\n<title>302 Found</title>\n</head><body>\n<h1>Found</h1>\n<p>The document has moved <a href=\"http://www.noaa.gov/\">here</a>\n</p>\n</body></html>\n">>.

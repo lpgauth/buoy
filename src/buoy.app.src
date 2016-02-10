@@ -1,0 +1,12 @@
+{application, buoy, [
+  {description, "http client"},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {applications, [
+    kernel,
+    stdlib,
+    shackle
+  ]},
+  {mod, {buoy_app, []}},
+  {env, []}
+]}.

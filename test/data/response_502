@@ -1,0 +1,5 @@
+<<"HTTP/1.1 502 Bad Gateway\r\n",
+  "Content-Type: application/json\r\n",
+  "Content-Length: 108\r\n\r\n",
+
+"<html><body><h1>502 Bad Gateway</h1>.The server returned an invalid or incomplete response\r\n</body></html>\r\n">>.

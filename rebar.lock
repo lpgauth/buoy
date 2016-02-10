@@ -1,0 +1,8 @@
+[{<<"granderl">>,
+  {git,"https://github.com/tokenrove/granderl.git",
+       {ref,"d3d29b9431cfbdc6766e3c18ba17b9d2624a70b2"}},
+  0},
+ {<<"shackle">>,
+  {git,"https://github.com/lpgauth/shackle.git",
+       {ref,"59dacadfd4fed1090ed1adaee24dca466da64a96"}},
+  0}].

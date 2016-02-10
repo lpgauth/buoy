@@ -1,0 +1,23 @@
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - gcc-5
+cache:
+  directories:
+    - $HOME/.cache/rebar3
+    - $TRAVIS_BUILD_DIR/_build
+dist: trusty
+env:
+  - CC=gcc-5
+group: edge
+install: true
+language: erlang
+notifications:
+  email: false
+otp_release:
+  - 19.1
+  - 18.3
+script: "make travis"
+sudo: required
