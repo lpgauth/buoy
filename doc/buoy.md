@@ -36,7 +36,17 @@ body() = undefined | iodata()
 
 
 <pre><code>
-buoy_resp() = #buoy_resp{state = status_line | headers | body | done, status_code = undefined | 100..505, reason = undefined | binary(), headers = undefined | <a href="#type-headers">headers()</a>, content_length = undefined | non_neg_integer(), body = undefined | binary()}
+buoy_resp() = #buoy_resp{state = body | done, status_code = undefined | 100..505, reason = undefined | binary(), headers = undefined | [binary()], content_length = undefined | non_neg_integer(), body = undefined | binary()}
+</code></pre>
+
+
+
+
+### <a name="type-buoy_url">buoy_url()</a> ###
+
+
+<pre><code>
+buoy_url() = #buoy_url{scheme = <a href="#type-scheme">scheme()</a>, host = <a href="#type-host">host()</a>, hostname = <a href="#type-hostname">hostname()</a>, port = <a href="inet.md#type-port_number">inet:port_number()</a>, path = <a href="#type-path">path()</a>}
 </code></pre>
 
 
@@ -82,6 +92,16 @@ headers() = [{iodata(), iodata()}]
 
 
 
+### <a name="type-host">host()</a> ###
+
+
+<pre><code>
+host() = binary()
+</code></pre>
+
+
+
+
 ### <a name="type-hostname">hostname()</a> ###
 
 
@@ -96,7 +116,7 @@ hostname() = binary()
 
 
 <pre><code>
-method() = binary()
+method() = get | post
 </code></pre>
 
 
@@ -199,26 +219,6 @@ server_name() = atom()
 time() = pos_integer()
 </code></pre>
 
-
-
-
-### <a name="type-url">url()</a> ###
-
-
-<pre><code>
-url() = binary()
-</code></pre>
-
-
-
-
-### <a name="type-url_tuple">url_tuple()</a> ###
-
-
-<pre><code>
-url_tuple() = {<a href="#type-scheme">scheme()</a>, <a href="#type-hostname">hostname()</a>, <a href="inet.md#type-port_number">inet:port_number()</a>, <a href="#type-path">path()</a>}
-</code></pre>
-
 <a name="index"></a>
 
 ## Function Index ##
@@ -236,7 +236,7 @@ url_tuple() = {<a href="#type-scheme">scheme()</a>, <a href="#type-hostname">hos
 ### async_get/1 ###
 
 <pre><code>
-async_get(Url::<a href="#type-url">url()</a> | <a href="#type-url_tuple">url_tuple()</a>) -&gt; {ok, <a href="/Users/lpgauth/Git/buoy/_build/default/lib/shackle/doc/shackle.md#type-request_id">shackle:request_id()</a>} | <a href="#type-error">error()</a>
+async_get(Url::<a href="#type-buoy_url">buoy_url()</a>) -&gt; {ok, <a href="/Users/lpgauth/Git/buoy/_build/default/lib/shackle/doc/shackle.md#type-request_id">shackle:request_id()</a>} | <a href="#type-error">error()</a>
 </code></pre>
 <br />
 
@@ -245,7 +245,7 @@ async_get(Url::<a href="#type-url">url()</a> | <a href="#type-url_tuple">url_tup
 ### async_get/2 ###
 
 <pre><code>
-async_get(Url::<a href="#type-url">url()</a> | <a href="#type-url_tuple">url_tuple()</a>, Headers::<a href="#type-headers">headers()</a>) -&gt; {ok, <a href="/Users/lpgauth/Git/buoy/_build/default/lib/shackle/doc/shackle.md#type-request_id">shackle:request_id()</a>} | <a href="#type-error">error()</a>
+async_get(Url::<a href="#type-buoy_url">buoy_url()</a>, Headers::<a href="#type-headers">headers()</a>) -&gt; {ok, <a href="/Users/lpgauth/Git/buoy/_build/default/lib/shackle/doc/shackle.md#type-request_id">shackle:request_id()</a>} | <a href="#type-error">error()</a>
 </code></pre>
 <br />
 
@@ -254,7 +254,7 @@ async_get(Url::<a href="#type-url">url()</a> | <a href="#type-url_tuple">url_tup
 ### async_get/3 ###
 
 <pre><code>
-async_get(Url::<a href="#type-url">url()</a> | <a href="#type-url_tuple">url_tuple()</a>, Headers::<a href="#type-headers">headers()</a>, Pid::pid()) -&gt; {ok, <a href="/Users/lpgauth/Git/buoy/_build/default/lib/shackle/doc/shackle.md#type-request_id">shackle:request_id()</a>} | <a href="#type-error">error()</a>
+async_get(Url::<a href="#type-buoy_url">buoy_url()</a>, Headers::<a href="#type-headers">headers()</a>, Pid::pid()) -&gt; {ok, <a href="/Users/lpgauth/Git/buoy/_build/default/lib/shackle/doc/shackle.md#type-request_id">shackle:request_id()</a>} | <a href="#type-error">error()</a>
 </code></pre>
 <br />
 
@@ -263,7 +263,7 @@ async_get(Url::<a href="#type-url">url()</a> | <a href="#type-url_tuple">url_tup
 ### async_post/1 ###
 
 <pre><code>
-async_post(Url::<a href="#type-url">url()</a> | <a href="#type-url_tuple">url_tuple()</a>) -&gt; {ok, <a href="/Users/lpgauth/Git/buoy/_build/default/lib/shackle/doc/shackle.md#type-request_id">shackle:request_id()</a>} | <a href="#type-error">error()</a>
+async_post(Url::<a href="#type-buoy_url">buoy_url()</a>) -&gt; {ok, <a href="/Users/lpgauth/Git/buoy/_build/default/lib/shackle/doc/shackle.md#type-request_id">shackle:request_id()</a>} | <a href="#type-error">error()</a>
 </code></pre>
 <br />
 
@@ -272,7 +272,7 @@ async_post(Url::<a href="#type-url">url()</a> | <a href="#type-url_tuple">url_tu
 ### async_post/2 ###
 
 <pre><code>
-async_post(Url::<a href="#type-url">url()</a> | <a href="#type-url_tuple">url_tuple()</a>, Headers::<a href="#type-headers">headers()</a>) -&gt; {ok, <a href="/Users/lpgauth/Git/buoy/_build/default/lib/shackle/doc/shackle.md#type-request_id">shackle:request_id()</a>} | <a href="#type-error">error()</a>
+async_post(Url::<a href="#type-buoy_url">buoy_url()</a>, Headers::<a href="#type-headers">headers()</a>) -&gt; {ok, <a href="/Users/lpgauth/Git/buoy/_build/default/lib/shackle/doc/shackle.md#type-request_id">shackle:request_id()</a>} | <a href="#type-error">error()</a>
 </code></pre>
 <br />
 
@@ -281,7 +281,7 @@ async_post(Url::<a href="#type-url">url()</a> | <a href="#type-url_tuple">url_tu
 ### async_post/3 ###
 
 <pre><code>
-async_post(Url::<a href="#type-url">url()</a> | <a href="#type-url_tuple">url_tuple()</a>, Headers::<a href="#type-headers">headers()</a>, Body::<a href="#type-body">body()</a>) -&gt; {ok, <a href="/Users/lpgauth/Git/buoy/_build/default/lib/shackle/doc/shackle.md#type-request_id">shackle:request_id()</a>} | <a href="#type-error">error()</a>
+async_post(Url::<a href="#type-buoy_url">buoy_url()</a>, Headers::<a href="#type-headers">headers()</a>, Body::<a href="#type-body">body()</a>) -&gt; {ok, <a href="/Users/lpgauth/Git/buoy/_build/default/lib/shackle/doc/shackle.md#type-request_id">shackle:request_id()</a>} | <a href="#type-error">error()</a>
 </code></pre>
 <br />
 
@@ -290,7 +290,7 @@ async_post(Url::<a href="#type-url">url()</a> | <a href="#type-url_tuple">url_tu
 ### async_post/4 ###
 
 <pre><code>
-async_post(Url::<a href="#type-url">url()</a> | <a href="#type-url_tuple">url_tuple()</a>, Headers::<a href="#type-headers">headers()</a>, Body::<a href="#type-body">body()</a>, Pid::pid()) -&gt; {ok, <a href="/Users/lpgauth/Git/buoy/_build/default/lib/shackle/doc/shackle.md#type-request_id">shackle:request_id()</a>} | <a href="#type-error">error()</a>
+async_post(Url::<a href="#type-buoy_url">buoy_url()</a>, Headers::<a href="#type-headers">headers()</a>, Body::<a href="#type-body">body()</a>, Pid::pid()) -&gt; {ok, <a href="/Users/lpgauth/Git/buoy/_build/default/lib/shackle/doc/shackle.md#type-request_id">shackle:request_id()</a>} | <a href="#type-error">error()</a>
 </code></pre>
 <br />
 
@@ -299,7 +299,7 @@ async_post(Url::<a href="#type-url">url()</a> | <a href="#type-url_tuple">url_tu
 ### async_request/5 ###
 
 <pre><code>
-async_request(Method::<a href="#type-method">method()</a>, Url::<a href="#type-url">url()</a> | <a href="#type-url_tuple">url_tuple()</a>, Headers::<a href="#type-headers">headers()</a>, Body::<a href="#type-body">body()</a>, Pid::pid()) -&gt; {ok, <a href="/Users/lpgauth/Git/buoy/_build/default/lib/shackle/doc/shackle.md#type-request_id">shackle:request_id()</a>} | <a href="#type-error">error()</a>
+async_request(Method::<a href="#type-method">method()</a>, Buoy_url::<a href="#type-buoy_url">buoy_url()</a>, Headers::<a href="#type-headers">headers()</a>, Body::<a href="#type-body">body()</a>, Pid::pid()) -&gt; {ok, <a href="/Users/lpgauth/Git/buoy/_build/default/lib/shackle/doc/shackle.md#type-request_id">shackle:request_id()</a>} | <a href="#type-error">error()</a>
 </code></pre>
 <br />
 
@@ -308,7 +308,7 @@ async_request(Method::<a href="#type-method">method()</a>, Url::<a href="#type-u
 ### get/1 ###
 
 <pre><code>
-get(Url::<a href="#type-url">url()</a> | <a href="#type-url_tuple">url_tuple()</a>) -&gt; {ok, <a href="#type-buoy_resp">buoy_resp()</a>} | <a href="#type-error">error()</a>
+get(Url::<a href="#type-buoy_url">buoy_url()</a>) -&gt; {ok, <a href="#type-buoy_resp">buoy_resp()</a>} | <a href="#type-error">error()</a>
 </code></pre>
 <br />
 
@@ -317,7 +317,7 @@ get(Url::<a href="#type-url">url()</a> | <a href="#type-url_tuple">url_tuple()</
 ### get/2 ###
 
 <pre><code>
-get(Url::<a href="#type-url">url()</a> | <a href="#type-url_tuple">url_tuple()</a>, Headers::<a href="#type-headers">headers()</a>) -&gt; {ok, <a href="#type-buoy_resp">buoy_resp()</a>} | <a href="#type-error">error()</a>
+get(Url::<a href="#type-buoy_url">buoy_url()</a>, Headers::<a href="#type-headers">headers()</a>) -&gt; {ok, <a href="#type-buoy_resp">buoy_resp()</a>} | <a href="#type-error">error()</a>
 </code></pre>
 <br />
 
@@ -326,7 +326,7 @@ get(Url::<a href="#type-url">url()</a> | <a href="#type-url_tuple">url_tuple()</
 ### get/3 ###
 
 <pre><code>
-get(Url::<a href="#type-url">url()</a> | <a href="#type-url_tuple">url_tuple()</a>, Headers::<a href="#type-headers">headers()</a>, Timeout::timeout()) -&gt; {ok, <a href="#type-buoy_resp">buoy_resp()</a>} | <a href="#type-error">error()</a>
+get(Url::<a href="#type-buoy_url">buoy_url()</a>, Headers::<a href="#type-headers">headers()</a>, Timeout::timeout()) -&gt; {ok, <a href="#type-buoy_resp">buoy_resp()</a>} | <a href="#type-error">error()</a>
 </code></pre>
 <br />
 
@@ -335,7 +335,7 @@ get(Url::<a href="#type-url">url()</a> | <a href="#type-url_tuple">url_tuple()</
 ### post/1 ###
 
 <pre><code>
-post(Url::<a href="#type-url">url()</a> | <a href="#type-url_tuple">url_tuple()</a>) -&gt; {ok, <a href="#type-buoy_resp">buoy_resp()</a>} | <a href="#type-error">error()</a>
+post(Url::<a href="#type-buoy_url">buoy_url()</a>) -&gt; {ok, <a href="#type-buoy_resp">buoy_resp()</a>} | <a href="#type-error">error()</a>
 </code></pre>
 <br />
 
@@ -344,7 +344,7 @@ post(Url::<a href="#type-url">url()</a> | <a href="#type-url_tuple">url_tuple()<
 ### post/2 ###
 
 <pre><code>
-post(Url::<a href="#type-url">url()</a> | <a href="#type-url_tuple">url_tuple()</a>, Headers::<a href="#type-headers">headers()</a>) -&gt; {ok, <a href="#type-buoy_resp">buoy_resp()</a>} | <a href="#type-error">error()</a>
+post(Url::<a href="#type-buoy_url">buoy_url()</a>, Headers::<a href="#type-headers">headers()</a>) -&gt; {ok, <a href="#type-buoy_resp">buoy_resp()</a>} | <a href="#type-error">error()</a>
 </code></pre>
 <br />
 
@@ -353,7 +353,7 @@ post(Url::<a href="#type-url">url()</a> | <a href="#type-url_tuple">url_tuple()<
 ### post/3 ###
 
 <pre><code>
-post(Url::<a href="#type-url">url()</a> | <a href="#type-url_tuple">url_tuple()</a>, Headers::<a href="#type-headers">headers()</a>, Body::<a href="#type-body">body()</a>) -&gt; {ok, <a href="#type-buoy_resp">buoy_resp()</a>} | <a href="#type-error">error()</a>
+post(Url::<a href="#type-buoy_url">buoy_url()</a>, Headers::<a href="#type-headers">headers()</a>, Body::<a href="#type-body">body()</a>) -&gt; {ok, <a href="#type-buoy_resp">buoy_resp()</a>} | <a href="#type-error">error()</a>
 </code></pre>
 <br />
 
@@ -362,7 +362,7 @@ post(Url::<a href="#type-url">url()</a> | <a href="#type-url_tuple">url_tuple()<
 ### post/4 ###
 
 <pre><code>
-post(Url::<a href="#type-url">url()</a> | <a href="#type-url_tuple">url_tuple()</a>, Headers::<a href="#type-headers">headers()</a>, Body::<a href="#type-body">body()</a>, Timeout::timeout()) -&gt; {ok, <a href="#type-buoy_resp">buoy_resp()</a>} | <a href="#type-error">error()</a>
+post(Url::<a href="#type-buoy_url">buoy_url()</a>, Headers::<a href="#type-headers">headers()</a>, Body::<a href="#type-body">body()</a>, Timeout::timeout()) -&gt; {ok, <a href="#type-buoy_resp">buoy_resp()</a>} | <a href="#type-error">error()</a>
 </code></pre>
 <br />
 
@@ -389,7 +389,7 @@ receive_response(RequestId::<a href="#type-request_id">request_id()</a>, Timeout
 ### request/5 ###
 
 <pre><code>
-request(Method::<a href="#type-method">method()</a>, Url::<a href="#type-url">url()</a> | <a href="#type-url_tuple">url_tuple()</a>, Headers::<a href="#type-headers">headers()</a>, Body::<a href="#type-body">body()</a>, Timeout::timeout()) -&gt; {ok, <a href="#type-buoy_resp">buoy_resp()</a>} | <a href="#type-error">error()</a>
+request(Method::<a href="#type-method">method()</a>, Buoy_url::<a href="#type-buoy_url">buoy_url()</a>, Headers::<a href="#type-headers">headers()</a>, Body::<a href="#type-body">body()</a>, Timeout::timeout()) -&gt; {ok, <a href="#type-buoy_resp">buoy_resp()</a>} | <a href="#type-error">error()</a>
 </code></pre>
 <br />
 

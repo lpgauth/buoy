@@ -26,7 +26,17 @@ backlog_size() = pos_integer() | infinity
 
 
 <pre><code>
-buoy_resp() = #buoy_resp{state = status_line | headers | body | done, status_code = undefined | 100..505, reason = undefined | binary(), headers = undefined | <a href="#type-headers">headers()</a>, content_length = undefined | non_neg_integer(), body = undefined | binary()}
+buoy_resp() = #buoy_resp{state = body | done, status_code = undefined | 100..505, reason = undefined | binary(), headers = undefined | [binary()], content_length = undefined | non_neg_integer(), body = undefined | binary()}
+</code></pre>
+
+
+
+
+### <a name="type-buoy_url">buoy_url()</a> ###
+
+
+<pre><code>
+buoy_url() = #buoy_url{scheme = <a href="#type-scheme">scheme()</a>, host = <a href="#type-host">host()</a>, hostname = <a href="#type-hostname">hostname()</a>, port = <a href="inet.md#type-port_number">inet:port_number()</a>, path = <a href="#type-path">path()</a>}
 </code></pre>
 
 
@@ -52,11 +62,11 @@ client_options() = [<a href="#type-client_option">client_option()</a>]
 
 
 
-### <a name="type-headers">headers()</a> ###
+### <a name="type-host">host()</a> ###
 
 
 <pre><code>
-headers() = [{iodata(), iodata()}]
+host() = binary()
 </code></pre>
 
 
@@ -149,16 +159,6 @@ scheme() = http | https
 time() = pos_integer()
 </code></pre>
 
-
-
-
-### <a name="type-url_tuple">url_tuple()</a> ###
-
-
-<pre><code>
-url_tuple() = {<a href="#type-scheme">scheme()</a>, <a href="#type-hostname">hostname()</a>, <a href="inet.md#type-port_number">inet:port_number()</a>, <a href="#type-path">path()</a>}
-</code></pre>
-
 <a name="index"></a>
 
 ## Function Index ##
@@ -176,7 +176,7 @@ url_tuple() = {<a href="#type-scheme">scheme()</a>, <a href="#type-hostname">hos
 ### parse_url/1 ###
 
 <pre><code>
-parse_url(Url::binary()) -&gt; <a href="#type-url_tuple">url_tuple()</a>
+parse_url(X1::binary()) -&gt; <a href="#type-buoy_url">buoy_url()</a> | {error, invalid_url}
 </code></pre>
 <br />
 

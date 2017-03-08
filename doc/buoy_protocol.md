@@ -22,11 +22,11 @@ backlog_size() = pos_integer() | infinity
 
 
 
-### <a name="type-buffer">buffer()</a> ###
+### <a name="type-body">body()</a> ###
 
 
 <pre><code>
-buffer() = binary()
+body() = undefined | iodata()
 </code></pre>
 
 
@@ -36,7 +36,17 @@ buffer() = binary()
 
 
 <pre><code>
-buoy_resp() = #buoy_resp{state = status_line | headers | body | done, status_code = undefined | 100..505, reason = undefined | binary(), headers = undefined | <a href="#type-headers">headers()</a>, content_length = undefined | non_neg_integer(), body = undefined | binary()}
+buoy_resp() = #buoy_resp{state = body | done, status_code = undefined | 100..505, reason = undefined | binary(), headers = undefined | [binary()], content_length = undefined | non_neg_integer(), body = undefined | binary()}
+</code></pre>
+
+
+
+
+### <a name="type-buoy_url">buoy_url()</a> ###
+
+
+<pre><code>
+buoy_url() = #buoy_url{scheme = <a href="#type-scheme">scheme()</a>, host = <a href="#type-host">host()</a>, hostname = <a href="#type-hostname">hostname()</a>, port = <a href="inet.md#type-port_number">inet:port_number()</a>, path = <a href="#type-path">path()</a>}
 </code></pre>
 
 
@@ -66,7 +76,7 @@ client_options() = [<a href="#type-client_option">client_option()</a>]
 
 
 <pre><code>
-error() = {error, bad_request | not_enough_data}
+error() = {error, term()}
 </code></pre>
 
 
@@ -77,6 +87,46 @@ error() = {error, bad_request | not_enough_data}
 
 <pre><code>
 headers() = [{iodata(), iodata()}]
+</code></pre>
+
+
+
+
+### <a name="type-host">host()</a> ###
+
+
+<pre><code>
+host() = binary()
+</code></pre>
+
+
+
+
+### <a name="type-hostname">hostname()</a> ###
+
+
+<pre><code>
+hostname() = binary()
+</code></pre>
+
+
+
+
+### <a name="type-method">method()</a> ###
+
+
+<pre><code>
+method() = get | post
+</code></pre>
+
+
+
+
+### <a name="type-path">path()</a> ###
+
+
+<pre><code>
+path() = binary()
 </code></pre>
 
 
@@ -132,6 +182,16 @@ protocol() = shackle_tcp | shackle_udp
 
 
 
+### <a name="type-scheme">scheme()</a> ###
+
+
+<pre><code>
+scheme() = http | https
+</code></pre>
+
+
+
+
 ### <a name="type-time">time()</a> ###
 
 
@@ -144,28 +204,28 @@ time() = pos_integer()
 ## Function Index ##
 
 
-<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#request-3">request/3</a></td><td></td></tr><tr><td valign="top"><a href="#request-4">request/4</a></td><td></td></tr><tr><td valign="top"><a href="#response-1">response/1</a></td><td></td></tr><tr><td valign="top"><a href="#response-2">response/2</a></td><td></td></tr></table>
+<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#headers-1">headers/1</a></td><td></td></tr><tr><td valign="top"><a href="#request-5">request/5</a></td><td></td></tr><tr><td valign="top"><a href="#response-1">response/1</a></td><td></td></tr><tr><td valign="top"><a href="#response-2">response/2</a></td><td></td></tr></table>
 
 
 <a name="functions"></a>
 
 ## Function Details ##
 
-<a name="request-3"></a>
+<a name="headers-1"></a>
 
-### request/3 ###
+### headers/1 ###
 
 <pre><code>
-request(Method::binary(), Path::iodata(), Headers::<a href="#type-headers">headers()</a>) -&gt; iodata()
+headers(Buoy_resp::<a href="#type-buoy_resp">buoy_resp()</a>) -&gt; {ok, <a href="#type-headers">headers()</a>} | {error, invalid_headers}
 </code></pre>
 <br />
 
-<a name="request-4"></a>
+<a name="request-5"></a>
 
-### request/4 ###
+### request/5 ###
 
 <pre><code>
-request(Method::binary(), Path::iodata(), Headers::<a href="#type-headers">headers()</a>, Body::iodata()) -&gt; iodata()
+request(Method::<a href="#type-method">method()</a>, Path::<a href="#type-path">path()</a>, Headers::<a href="#type-headers">headers()</a>, Host::<a href="#type-host">host()</a>, Body::<a href="#type-body">body()</a>) -&gt; iolist()
 </code></pre>
 <br />
 
@@ -174,7 +234,7 @@ request(Method::binary(), Path::iodata(), Headers::<a href="#type-headers">heade
 ### response/1 ###
 
 <pre><code>
-response(Data::binary()) -&gt; {ok, <a href="#type-buoy_resp">buoy_resp()</a>, <a href="#type-buffer">buffer()</a>} | <a href="#type-error">error()</a>
+response(Data::binary()) -&gt; {ok, <a href="#type-buoy_resp">buoy_resp()</a>, binary()} | <a href="#type-error">error()</a>
 </code></pre>
 <br />
 
@@ -183,7 +243,7 @@ response(Data::binary()) -&gt; {ok, <a href="#type-buoy_resp">buoy_resp()</a>, <
 ### response/2 ###
 
 <pre><code>
-response(Data::binary(), Buoy_resp::<a href="#type-buoy_resp">buoy_resp()</a>) -&gt; {ok, <a href="#type-buoy_resp">buoy_resp()</a>, <a href="#type-buffer">buffer()</a>} | <a href="#type-error">error()</a>
+response(Data::binary(), Buoy_resp::undefined | <a href="#type-buoy_resp">buoy_resp()</a>) -&gt; {ok, <a href="#type-buoy_resp">buoy_resp()</a>, binary()} | <a href="#type-error">error()</a>
 </code></pre>
 <br />
 

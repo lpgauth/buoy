@@ -26,7 +26,17 @@ backlog_size() = pos_integer() | infinity
 
 
 <pre><code>
-buoy_resp() = #buoy_resp{state = status_line | headers | body | done, status_code = undefined | 100..505, reason = undefined | binary(), headers = undefined | <a href="#type-headers">headers()</a>, content_length = undefined | non_neg_integer(), body = undefined | binary()}
+buoy_resp() = #buoy_resp{state = body | done, status_code = undefined | 100..505, reason = undefined | binary(), headers = undefined | [binary()], content_length = undefined | non_neg_integer(), body = undefined | binary()}
+</code></pre>
+
+
+
+
+### <a name="type-buoy_url">buoy_url()</a> ###
+
+
+<pre><code>
+buoy_url() = #buoy_url{scheme = <a href="#type-scheme">scheme()</a>, host = <a href="#type-host">host()</a>, hostname = <a href="#type-hostname">hostname()</a>, port = <a href="inet.md#type-port_number">inet:port_number()</a>, path = <a href="#type-path">path()</a>}
 </code></pre>
 
 
@@ -52,11 +62,31 @@ client_options() = [<a href="#type-client_option">client_option()</a>]
 
 
 
-### <a name="type-headers">headers()</a> ###
+### <a name="type-host">host()</a> ###
 
 
 <pre><code>
-headers() = [{iodata(), iodata()}]
+host() = binary()
+</code></pre>
+
+
+
+
+### <a name="type-hostname">hostname()</a> ###
+
+
+<pre><code>
+hostname() = binary()
+</code></pre>
+
+
+
+
+### <a name="type-path">path()</a> ###
+
+
+<pre><code>
+path() = binary()
 </code></pre>
 
 
@@ -107,6 +137,16 @@ pool_strategy() = random | round_robin
 
 <pre><code>
 protocol() = shackle_tcp | shackle_udp
+</code></pre>
+
+
+
+
+### <a name="type-scheme">scheme()</a> ###
+
+
+<pre><code>
+scheme() = http | https
 </code></pre>
 
 
