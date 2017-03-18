@@ -80,9 +80,7 @@ responses(Data, Requests, State, Responses) ->
                 requests_in = Requests
             }};
         {error, Reason} ->
-            % TODO: https://github.com/lpgauth/shackle/issues/45
-            Responses2 = [{Requests, {error, Reason}} | Responses],
-            responses(<<>>, Requests + 1, State, Responses2)
+            {error, Reason, State}
     end.
 
 request_id(N) ->

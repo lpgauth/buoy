@@ -6,7 +6,7 @@
  {<<"metal">>,{pkg,<<"metal">>,<<"0.1.0">>},1},
  {<<"shackle">>,
   {git,"https://github.com/lpgauth/shackle.git",
-       {ref,"a704e30a2f0bf9f5cb08aee70fb7cbc429ebd5e4"}},
+       {ref,"b9c0b01ac61f0721e4efcd8da4c1fb5eaa5d9066"}},
   0}]}.
 [
 {pkg_hash,[

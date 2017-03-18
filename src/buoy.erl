@@ -1,7 +1,6 @@
 -module(buoy).
 -include("buoy_internal.hrl").
 
-%% TODO: add dummy buoy_pool_utils module
 -ignore_xref([
     {buoy_pool_utils, name, 3}
 ]).
