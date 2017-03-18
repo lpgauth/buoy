@@ -1,5 +1,4 @@
 -module(buoy_top_domains_test).
--include("test.hrl").
 
 -export([
     run/0
@@ -15,19 +14,13 @@ run() ->
 
 %% private
 domain_test(Domain) ->
-    buoy_pool:start(Domain, 80, [
+    Url = buoy_utils:parse_url(<<"http://", Domain/binary, "/">>),
+    buoy_pool:start(Url, [
         {pool_size, 1},
         {reconnect, false}
     ]),
-    case buoy:get(<<"http://", Domain/binary, "/">>) of
-        {ok, #buoy_resp {}} ->
-            ok;
-        {error, unsupported_feature} ->
-            ok;
-        {error, Reason} ->
-            io:format("~p: ~p~n", [Domain, Reason])
-    end,
-    ok = buoy_pool:stop(Domain, 80).
+    buoy:get(Url),
+    ok = buoy_pool:stop(Url).
 
 loop_file(File) ->
     case file:read_line(File) of

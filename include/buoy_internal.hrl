@@ -18,7 +18,7 @@
 -define(DEFAULT_POOL_SIZE, 16).
 -define(DEFAULT_POOL_STRATEGY, random).
 -define(DEFAULT_PORT, 80).
--define(DEFAULT_RECONNECT, false).
+-define(DEFAULT_RECONNECT, true).
 -define(DEFAULT_RECONNECT_MAX, undefined).
 -define(DEFAULT_RECONNECT_MIN, undefined).
 -define(DEFAULT_TIMEOUT, 1000).

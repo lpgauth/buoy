@@ -1,5 +1,6 @@
 -module(buoy_utils_tests).
--include("test.hrl").
+-include_lib("buoy/include/buoy.hrl").
+-include_lib("eunit/include/eunit.hrl").
 
 %% runners
 parse_url_test() ->

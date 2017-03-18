@@ -1,19 +1,19 @@
 %% records
 -record(buoy_resp, {
     state          :: body | done,
-    status_code    :: undefined | 100..505,
-    reason         :: undefined | binary(),
-    headers        :: undefined | [binary()],
+    body           :: undefined | binary(),
     content_length :: undefined | non_neg_integer(),
-    body           :: undefined | binary()
+    headers        :: undefined | [binary()],
+    reason         :: undefined | binary(),
+    status_code    :: undefined | 100..505
 }).
 
 -record(buoy_url, {
-    protocol :: protocol_http(),
     host     :: host(),
     hostname :: hostname(),
+    path     :: path(),
     port     :: inet:port_number(),
-    path     :: path()
+    protocol :: protocol_http()
 }).
 
 %% types

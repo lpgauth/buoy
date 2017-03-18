@@ -1,5 +1,4 @@
 -module(buoy_profile).
--include("test.hrl").
 
 -export([
     fprofx/0
@@ -24,11 +23,11 @@ fprofx() ->
     fprofx:trace([start, {procs, new}, {tracer, Tracer}]),
 
     buoy_app:start(),
-    buoy_pool:start(<<"127.0.0.1">>, 8080),
+    buoy_pool:start(BuoyUrl),
 
     Self = self(),
     [spawn(fun () ->
-        [buoy_get(BuoyUrl) || _ <- lists:seq(1, ?N)],
+        [{ok, _} = buoy_get(BuoyUrl) || _ <- lists:seq(1, ?N)],
         Self ! exit
     end) || _ <- lists:seq(1, ?P)],
     wait(),

@@ -1,5 +1,6 @@
 -module(buoy_protocol_tests).
--include("test.hrl").
+-include_lib("buoy/include/buoy.hrl").
+-include_lib("eunit/include/eunit.hrl").
 
 %% runners
 headers_test() ->

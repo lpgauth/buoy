@@ -37,6 +37,7 @@ start(#buoy_url {
     Name = name(Protocol, Hostname, Port),
     ClientOptions = client_options(Protocol, Hostname, Port, Options),
     PoolOptions = pool_options(Options),
+
     case shackle_pool:start(Name, ?CLIENT, ClientOptions, PoolOptions) of
         ok ->
             ets:insert(?ETS_TABLE_POOL, {{Protocol, Hostname, Port}, Name}),

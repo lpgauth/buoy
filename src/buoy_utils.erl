@@ -21,29 +21,29 @@ parse_url(_) ->
 
 %% private
 parse_url(Protocol, Rest) ->
-    {Host, Path} =
-        case binary:split(Rest, <<"/">>, [trim]) of
-            [Host2] ->
-                {Host2, <<"/">>};
-            [Host2, Path2] ->
-                {Host2, <<"/", Path2/binary>>}
+    {Host, Path} = case binary:split(Rest, <<"/">>, [trim]) of
+        [Host2] ->
+            {Host2, <<"/">>};
+        [Host2, Path2] ->
+            {Host2, <<"/", Path2/binary>>}
     end,
-    {Hostname, Port} =
-        case binary:split(Host, <<":">>, [trim]) of
-            [Host] ->
-                case Protocol of
-                    http ->
-                        {Host, 80};
-                    https ->
-                        {Host, 443}
-                end;
-            [Hostname2, Port2] ->
-                {Hostname2, binary_to_integer(Port2)}
+
+    {Hostname, Port} = case binary:split(Host, <<":">>, [trim]) of
+        [Host] ->
+            case Protocol of
+                http ->
+                    {Host, 80};
+                https ->
+                    {Host, 443}
+            end;
+        [Hostname2, Port2] ->
+            {Hostname2, binary_to_integer(Port2)}
     end,
+
     #buoy_url {
-        protocol = Protocol,
         host = Host,
         hostname = Hostname,
+        path = Path,
         port = Port,
-        path = Path
+        protocol = Protocol
     }.

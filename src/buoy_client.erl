@@ -47,7 +47,8 @@ handle_request({request, Request}, #state {
     }}.
 
 -spec handle_data(binary(), state()) ->
-    {ok, [{pos_integer(), term()}], state()}.
+    {ok, [{pos_integer(), term()}], state()} |
+    {error, atom(), state()}.
 
 handle_data(Data, #state {
         buffer = Buffer,

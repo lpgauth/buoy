@@ -1,5 +1,4 @@
 -module(buoy_http_server).
--include("test.hrl").
 
 -export([
     start/0,
