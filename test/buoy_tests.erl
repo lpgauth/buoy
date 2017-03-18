@@ -30,12 +30,12 @@ get_subtest() ->
     {ok, ?RESP_2} = buoy:get(?URL(?URL_2)).
 
 pool_subtest() ->
-    {error, pool_already_started} = buoy_pool:start(?HOST, ?PORT),
-    ok = buoy_pool:stop(?HOST, ?PORT),
-    {error, pool_not_started} = buoy_pool:stop(?HOST, ?PORT),
+    {error, pool_already_started} = buoy_pool:start(?URL(?URL_1)),
+    ok = buoy_pool:stop(?URL(?URL_1)),
+    {error, pool_not_started} = buoy_pool:stop(?URL(?URL_1)),
     {error, pool_not_started} = buoy:get(?URL(?URL_1)),
     {error, pool_not_started} = buoy:async_get(?URL(?URL_1)),
-    ok = buoy_pool:start(?HOST, ?PORT).
+    ok = buoy_pool:start(?URL(?URL_1)).
 
 post_subtest() ->
     {ok, ReqId} = buoy:async_post(?URL(?URL_3)),
@@ -45,7 +45,7 @@ post_subtest() ->
 
 %% utils
 cleanup() ->
-    buoy_pool:stop(?HOST, ?PORT),
+    buoy_pool:stop(?URL(?URL_1)),
     buoy_app:stop(),
     buoy_http_server:stop().
 
@@ -54,4 +54,4 @@ setup() ->
     {ok, _} = buoy_http_server:start(),
     timer:sleep(100),
     buoy_app:start(),
-    buoy_pool:start(?HOST, ?PORT).
+    buoy_pool:start(?URL(?URL_1)).

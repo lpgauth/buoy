@@ -1,8 +1,9 @@
 -module(buoy).
 -include("buoy_internal.hrl").
 
+%% TODO: add dummy buoy_pool_utils module
 -ignore_xref([
-    {buoy_pool_utils, name, 2}
+    {buoy_pool_utils, name, 3}
 ]).
 
 -compile(inline).
@@ -16,7 +17,7 @@
     async_post/2,
     async_post/3,
     async_post/4,
-    async_request/5,
+    async_request/6,
     get/1,
     get/2,
     get/3,
@@ -25,7 +26,6 @@
     post/3,
     post/4,
     receive_response/1,
-    receive_response/2,
     request/5
 ]).
 
@@ -46,7 +46,13 @@ async_get(Url, Headers) ->
     {ok, shackle:request_id()} | error().
 
 async_get(Url, Headers, Pid) ->
-    async_request(get, Url, Headers, ?DEFAULT_BODY, Pid).
+    async_get(Url, Headers, Pid, ?DEFAULT_TIMEOUT).
+
+-spec async_get(buoy_url(), headers(), pid(), timeout()) ->
+    {ok, shackle:request_id()} | error().
+
+async_get(Url, Headers, Pid, Timeout) ->
+    async_request(get, Url, Headers, ?DEFAULT_BODY, Pid, Timeout).
 
 -spec async_post(buoy_url()) ->
     {ok, shackle:request_id()} | error().
@@ -70,21 +76,28 @@ async_post(Url, Headers, Body) ->
     {ok, shackle:request_id()} | error().
 
 async_post(Url, Headers, Body, Pid) ->
-    async_request(post, Url, Headers, Body, Pid).
+    async_post(Url, Headers, Body, Pid, ?DEFAULT_TIMEOUT).
 
--spec async_request(method(), buoy_url(), headers(), body(), pid()) ->
+-spec async_post(buoy_url(), headers(), body(), pid(), timeout()) ->
     {ok, shackle:request_id()} | error().
 
+async_post(Url, Headers, Body, Pid, Timeout) ->
+    async_request(post, Url, Headers, Body, Pid, Timeout).
+
+-spec async_request(method(), buoy_url(), headers(), body(),
+    pid(), timeout()) -> {ok, shackle:request_id()} | error().
+
 async_request(Method, #buoy_url {
+        protocol = Protocol,
         host = Host,
         hostname = Hostname,
         port = Port,
         path = Path
-    }, Headers, Body, Pid) ->
+    }, Headers, Body, Pid, Timeout) ->
 
-    PoolName = buoy_pool_utils:name(Hostname, Port),
+    PoolName = buoy_pool_utils:name(Protocol, Hostname, Port),
     Request = buoy_protocol:request(Method, Path, Headers, Host, Body),
-    cast(PoolName, {request, Request}, Pid).
+    cast(PoolName, {request, Request}, Pid, Timeout).
 
 -spec get(buoy_url()) ->
     {ok, buoy_resp()} | error().
@@ -132,33 +145,28 @@ post(Url, Headers, Body, Timeout) ->
     {ok, term()} | error().
 
 receive_response(RequestId) ->
-    receive_response(RequestId, ?DEFAULT_TIMEOUT).
-
--spec receive_response(request_id(), pos_integer()) ->
-    {ok, term()} | error().
-
-receive_response(RequestId, Timeout) ->
-    shackle:receive_response(RequestId, Timeout).
+    shackle:receive_response(RequestId).
 
 -spec request(method(), buoy_url(), headers(), body(), timeout()) ->
     {ok, buoy_resp()} | error().
 
 request(Method, #buoy_url {
+        protocol = Protocol,
         host = Host,
         hostname = Hostname,
         port = Port,
         path = Path
     }, Headers, Body, Timeout) ->
 
-    PoolName = buoy_pool_utils:name(Hostname, Port),
+    PoolName = buoy_pool_utils:name(Protocol, Hostname, Port),
     Request = buoy_protocol:request(Method, Path, Headers, Host, Body),
     call(PoolName, {request, Request}, Timeout).
 
 %% private
-cast(undefined, _Request, _Pid) ->
+cast(undefined, _Request, _Pid, _Timeout) ->
     {error, pool_not_started};
-cast(PoolName, Request, Pid) ->
-    shackle:cast(PoolName, Request, Pid).
+cast(PoolName, Request, Pid, Timeout) ->
+    shackle:cast(PoolName, Request, Pid, Timeout).
 
 call(undefined, _Request, _Timeout) ->
     {error, pool_not_started};

@@ -20,7 +20,7 @@ parse_url(_) ->
     {error, invalid_url}.
 
 %% private
-parse_url(Scheme, Rest) ->
+parse_url(Protocol, Rest) ->
     {Host, Path} =
         case binary:split(Rest, <<"/">>, [trim]) of
             [Host2] ->
@@ -31,19 +31,19 @@ parse_url(Scheme, Rest) ->
     {Hostname, Port} =
         case binary:split(Host, <<":">>, [trim]) of
             [Host] ->
-                {Host, default_port(Scheme)};
+                case Protocol of
+                    http ->
+                        {Host, 80};
+                    https ->
+                        {Host, 443}
+                end;
             [Hostname2, Port2] ->
                 {Hostname2, binary_to_integer(Port2)}
     end,
     #buoy_url {
-        scheme = Scheme,
+        protocol = Protocol,
         host = Host,
         hostname = Hostname,
         port = Port,
         path = Path
     }.
-
-default_port(http) ->
-    80;
-default_port(https) ->
-    443.

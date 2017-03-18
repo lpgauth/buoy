@@ -4,7 +4,7 @@
 %% runners
 parse_url_test() ->
     assert_parse_url(#buoy_url {
-        scheme = http,
+        protocol = http,
         host = <<"adgear.com">>,
         hostname = <<"adgear.com">>,
         port = 80,
@@ -12,7 +12,7 @@ parse_url_test() ->
     }, <<"http://adgear.com">>),
 
     assert_parse_url(#buoy_url {
-        scheme = https,
+        protocol = https,
         host = <<"adgear.com">>,
         hostname = <<"adgear.com">>,
         port = 443,
@@ -20,7 +20,7 @@ parse_url_test() ->
     }, <<"https://adgear.com/hello/world">>),
 
     assert_parse_url(#buoy_url {
-        scheme = http,
+        protocol = http,
         host = <<"test.com:8080">>,
         hostname = <<"test.com">>,
         port = 8080,
