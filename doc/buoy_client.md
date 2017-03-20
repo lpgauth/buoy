@@ -26,7 +26,7 @@ backlog_size() = pos_integer() | infinity
 
 
 <pre><code>
-buoy_resp() = #buoy_resp{state = body | done, status_code = undefined | 100..505, reason = undefined | binary(), headers = undefined | [binary()], content_length = undefined | non_neg_integer(), body = undefined | binary()}
+buoy_resp() = #buoy_resp{state = body | done, body = undefined | binary(), content_length = undefined | non_neg_integer(), headers = undefined | [binary()], reason = undefined | binary(), status_code = undefined | 100..505}
 </code></pre>
 
 
@@ -36,7 +36,7 @@ buoy_resp() = #buoy_resp{state = body | done, status_code = undefined | 100..505
 
 
 <pre><code>
-buoy_url() = #buoy_url{scheme = <a href="#type-scheme">scheme()</a>, host = <a href="#type-host">host()</a>, hostname = <a href="#type-hostname">hostname()</a>, port = <a href="inet.md#type-port_number">inet:port_number()</a>, path = <a href="#type-path">path()</a>}
+buoy_url() = #buoy_url{host = <a href="#type-host">host()</a>, hostname = <a href="#type-hostname">hostname()</a>, path = <a href="#type-path">path()</a>, port = <a href="inet.md#type-port_number">inet:port_number()</a>, protocol = <a href="#type-protocol_http">protocol_http()</a>}
 </code></pre>
 
 
@@ -46,7 +46,7 @@ buoy_url() = #buoy_url{scheme = <a href="#type-scheme">scheme()</a>, host = <a h
 
 
 <pre><code>
-client_option() = {ip, <a href="inet.md#type-ip_address">inet:ip_address()</a> | <a href="inet.md#type-hostname">inet:hostname()</a>} | {port, <a href="inet.md#type-port_number">inet:port_number()</a>} | {protocol, <a href="#type-protocol">protocol()</a>} | {reconnect, boolean()} | {reconnect_time_max, <a href="#type-time">time()</a>} | {reconnect_time_min, <a href="#type-time">time()</a>} | {socket_options, [<a href="gen_tcp.md#type-connect_option">gen_tcp:connect_option()</a> | <a href="gen_udp.md#type-option">gen_udp:option()</a>]}
+client_option() = {ip, <a href="inet.md#type-ip_address">inet:ip_address()</a> | <a href="inet.md#type-hostname">inet:hostname()</a>} | {port, <a href="inet.md#type-port_number">inet:port_number()</a>} | {protocol, <a href="#type-protocol">protocol()</a>} | {reconnect, boolean()} | {reconnect_time_max, <a href="#type-time">time()</a> | infinity} | {reconnect_time_min, <a href="#type-time">time()</a>} | {socket_options, [<a href="gen_tcp.md#type-connect_option">gen_tcp:connect_option()</a> | <a href="gen_udp.md#type-option">gen_udp:option()</a>]}
 </code></pre>
 
 
@@ -136,17 +136,17 @@ pool_strategy() = random | round_robin
 
 
 <pre><code>
-protocol() = shackle_tcp | shackle_udp
+protocol() = shackle_ssl | shackle_tcp | shackle_udp
 </code></pre>
 
 
 
 
-### <a name="type-scheme">scheme()</a> ###
+### <a name="type-protocol_http">protocol_http()</a> ###
 
 
 <pre><code>
-scheme() = http | https
+protocol_http() = http | https
 </code></pre>
 
 
@@ -186,7 +186,7 @@ time() = pos_integer()
 ### handle_data/2 ###
 
 <pre><code>
-handle_data(Data::binary(), State::<a href="#type-state">state()</a>) -&gt; {ok, [{pos_integer(), term()}], <a href="#type-state">state()</a>}
+handle_data(Data::binary(), State::<a href="#type-state">state()</a>) -&gt; {ok, [{pos_integer(), term()}], <a href="#type-state">state()</a>} | {error, atom(), <a href="#type-state">state()</a>}
 </code></pre>
 <br />
 

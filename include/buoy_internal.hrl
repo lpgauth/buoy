@@ -19,8 +19,8 @@
 -define(DEFAULT_POOL_STRATEGY, random).
 -define(DEFAULT_PORT, 80).
 -define(DEFAULT_RECONNECT, true).
--define(DEFAULT_RECONNECT_MAX, undefined).
--define(DEFAULT_RECONNECT_MIN, undefined).
+-define(DEFAULT_RECONNECT_MAX, 500).
+-define(DEFAULT_RECONNECT_MIN, 120000).
 -define(DEFAULT_TIMEOUT, 1000).
 
 %% ETS tables
