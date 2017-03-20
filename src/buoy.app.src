@@ -1,12 +1,11 @@
 {application, buoy, [
-  {description, "http client"},
-  {vsn, "0.1.0"},
-  {registered, []},
-  {applications, [
-    kernel,
-    stdlib,
-    shackle
-  ]},
+  {applications, [kernel, stdlib, shackle]},
+  {description, "High Performance Erlang HTTP 1.1 Client"},
+  {env, []},
+  {licenses, ["MIT"]},
+  {links, [{"GitHub", "https://github.com/lpgauth/buoy"}]},
+  {maintainers, ["Louis-Philippe Gauthier"]},
   {mod, {buoy_app, []}},
-  {env, []}
+  {registered, []},
+  {vsn, "0.1.0"}
 ]}.
