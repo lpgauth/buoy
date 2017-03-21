@@ -1,6 +1,6 @@
 # buoy
 
-High Performance Erlang HTTP 1.1 Client
+High-Performance Erlang HTTP 1.1 Client
 
 [![Build Status](https://travis-ci.org/lpgauth/buoy.svg?branch=dev)](https://travis-ci.org/lpgauth/buoy.svg?branch=dev)
 [![Coverage Status](https://coveralls.io/repos/github/lpgauth/buoy/badge.svg?branch=dev)](https://coveralls.io/github/lpgauth/buoy?branch=dev)
@@ -16,7 +16,7 @@ This HTTP client has been designed for HTTP 1.1 with keep-alive. For performance
 - Doesn't support chunked encoding
 
 ## API
-<a href="http://github.com/lpgauth/buoy/blob/master/doc/buoy#index" class="module">Function Index</a>
+<a href="http://github.com/lpgauth/buoy/blob/master/doc/buoy.md#index" class="module">Function Index</a>
 
 ## Examples
 
