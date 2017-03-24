@@ -41,8 +41,7 @@ handle_request({request, Request}, #state {
         requests_out = Requests
     } = State) ->
 
-    RequestId = request_id(Requests),
-    {ok, RequestId, Request, State#state {
+    {ok, Requests, Request, State#state {
         requests_out = Requests + 1
     }}.
 
@@ -83,6 +82,3 @@ responses(Data, Requests, State, Responses) ->
         {error, Reason} ->
             {error, Reason, State}
     end.
-
-request_id(N) ->
-    N rem ?MAX_32_BIT_INT.
