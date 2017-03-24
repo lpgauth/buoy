@@ -40,10 +40,11 @@ setup(_Socket, State) ->
 -spec handle_request(term(), state()) ->
     {ok, non_neg_integer(), iodata(), state()}.
 
-handle_request({request, Request}, #state {
+handle_request({request, Method, Path, Headers, Host, Body}, #state {
         requests_out = Requests
     } = State) ->
 
+    Request = buoy_protocol:request(Method, Path, Headers, Host, Body),
     {ok, Requests, Request, State#state {
         requests_out = Requests + 1
     }}.

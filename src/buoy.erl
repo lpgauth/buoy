@@ -95,8 +95,7 @@ async_request(Method, #buoy_url {
     }, Headers, Body, Pid, Timeout) ->
 
     PoolName = buoy_pool_utils:name(Protocol, Hostname, Port),
-    Request = buoy_protocol:request(Method, Path, Headers, Host, Body),
-    cast(PoolName, {request, Request}, Pid, Timeout).
+    cast(PoolName, {request, Method, Path, Headers, Host, Body}, Pid, Timeout).
 
 -spec get(buoy_url()) ->
     {ok, buoy_resp()} | error().
@@ -158,8 +157,7 @@ request(Method, #buoy_url {
     }, Headers, Body, Timeout) ->
 
     PoolName = buoy_pool_utils:name(Protocol, Hostname, Port),
-    Request = buoy_protocol:request(Method, Path, Headers, Host, Body),
-    call(PoolName, {request, Request}, Timeout).
+    call(PoolName, {request, Method, Path, Headers, Host, Body}, Timeout).
 
 %% private
 cast(undefined, _Request, _Pid, _Timeout) ->
