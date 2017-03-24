@@ -5,13 +5,30 @@
 -compile({inline_size, 512}).
 
 -export([
+    bin_patterns/0,
     headers/1,
     request/5,
     response/1,
-    response/2
+    response/3
 ]).
 
+-record(bin_patterns, {
+    rn   :: binary:cp(),
+    rnrn :: binary:cp()
+}).
+
+-type bin_patterns() :: #bin_patterns {}.
+
 %% public
+-spec bin_patterns() ->
+    bin_patterns().
+
+bin_patterns() ->
+    #bin_patterns {
+        rn   = binary:compile_pattern(<<"\r\n">>),
+        rnrn = binary:compile_pattern(<<"\r\n\r\n">>)
+    }.
+
 -spec headers(buoy_resp()) ->
     {ok, headers()} | {error, invalid_headers}.
 
@@ -44,15 +61,15 @@ request(Method, Path, Headers, Host, Body) ->
     {ok, buoy_resp(), binary()} | error().
 
 response(Data) ->
-    response(Data, undefined).
+    response(Data, undefined, bin_patterns()).
 
--spec response(binary(), undefined | buoy_resp()) ->
+-spec response(binary(), undefined | buoy_resp(), bin_patterns()) ->
     {ok, buoy_resp(), binary()} | error().
 
-response(Data, undefined) ->
-    case parse_status_line(Data) of
+response(Data, undefined, BinPatterns) ->
+    case parse_status_line(Data, BinPatterns) of
         {StatusCode, Reason, Rest} ->
-            case split_headers(Rest) of
+            case split_headers(Rest, BinPatterns) of
                 {undefined, Headers, Rest2} ->
                     {ok, #buoy_resp {
                         state = done,
@@ -76,7 +93,7 @@ response(Data, undefined) ->
                         reason = Reason,
                         headers = Headers,
                         content_length = ContentLength
-                    });
+                    }, BinPatterns);
                 {error, Reason2} ->
                     {error, Reason2}
             end;
@@ -86,7 +103,7 @@ response(Data, undefined) ->
 response(Data, #buoy_resp {
         state = body,
         content_length = ContentLength
-    } = Response) when size(Data) >= ContentLength ->
+    } = Response, _BinPatterns) when size(Data) >= ContentLength ->
 
     <<Body:ContentLength/binary, Rest/binary>> = Data,
 
@@ -96,7 +113,7 @@ response(Data, #buoy_resp {
     }, Rest};
 response(_Data, #buoy_resp {
         state = body
-    }) ->
+    }, _BinPatterns) ->
 
     {error, not_enough_data}.
 
@@ -137,8 +154,8 @@ parse_headers([Header | T], Acc) ->
             parse_headers(T, [{Key, Value} | Acc])
     end.
 
-parse_status_line(Data) ->
-    case binary:split(Data, <<"\r\n">>) of
+parse_status_line(Data, #bin_patterns {rn = Rn}) ->
+    case binary:split(Data, Rn) of
         [Data] ->
             {error, not_enough_data};
         [Line, Rest] ->
@@ -178,12 +195,12 @@ parse_status_reason(<<"HTTP/1.0 ", _/binary>>) ->
 parse_status_reason(_) ->
     {error, bad_request}.
 
-split_headers(Data) ->
-    case binary:split(Data, <<"\r\n\r\n">>) of
+split_headers(Data, #bin_patterns {rn = Rn, rnrn = Rnrn}) ->
+    case binary:split(Data, Rnrn) of
         [Data] ->
             {error, not_enough_data};
         [Headers, Body] ->
-            Headers2 = binary:split(Headers, <<"\r\n">>, [global]),
+            Headers2 = binary:split(Headers, Rn, [global]),
             case content_length(Headers2) of
                 {ok, ContentLength} ->
                     {ContentLength, Headers2, Body};

@@ -14,6 +14,7 @@
 ]).
 
 -record(state, {
+    bin_patterns        :: tuple(),
     buffer       = <<>> :: binary(),
     requests_in  = 0    :: non_neg_integer(),
     requests_out = 0    :: non_neg_integer()
@@ -26,7 +27,9 @@
     {ok, state()}.
 
 init() ->
-    {ok, #state {}}.
+    {ok, #state {
+        bin_patterns = buoy_protocol:bin_patterns()
+    }}.
 
 -spec setup(inet:socket(), state()) ->
     {ok, state()}.
@@ -69,8 +72,11 @@ responses(<<>>, Requests, State, Responses) ->
         buffer = <<>>,
         requests_in = Requests
     }};
-responses(Data, Requests, State, Responses) ->
-    case buoy_protocol:response(Data, undefined) of
+responses(Data, Requests, #state {
+        bin_patterns = BinPatterns
+    } = State, Responses) ->
+
+    case buoy_protocol:response(Data, undefined, BinPatterns) of
         {ok, Response, Rest} ->
             Responses2 = [{Requests, {ok, Response}} | Responses],
             responses(Rest, Requests + 1, State, Responses2);
