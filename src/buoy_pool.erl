@@ -23,7 +23,7 @@ init() ->
     ok | {error, pool_already_started | shackle_not_started}.
 
 start(Url) ->
-    start(Url, ?DEFAULT_POOL_OTPIONS).
+    start(Url, ?DEFAULT_POOL_OPTIONS).
 
 -spec start(buoy_url(), options()) ->
     ok | {error, pool_already_started | shackle_not_started}.
