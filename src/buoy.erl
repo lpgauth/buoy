@@ -12,6 +12,7 @@
     async_get/1,
     async_get/2,
     async_get/3,
+    async_get/4,
     async_post/1,
     async_post/2,
     async_post/3,
