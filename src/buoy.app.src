@@ -7,5 +7,5 @@
   {maintainers, ["Louis-Philippe Gauthier"]},
   {mod, {buoy_app, []}},
   {registered, []},
-  {vsn, "0.1.2"}
+  {vsn, "0.1.3"}
 ]}.
