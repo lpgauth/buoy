@@ -111,13 +111,21 @@ response(Data, #buoy_resp {
         state = done,
         body = Body
     }, Rest};
-response(_Data, #buoy_resp {
+response(Data, #buoy_resp {
         state = body
-    }, _BinPatterns) ->
+    } = Resp, _BinPatterns) ->
 
-    {error, not_enough_data}.
+    {ok, Resp, Data}.
 
 %% private
+binary_split_global(Bin, Pattern) ->
+    case binary:split(Bin, Pattern) of
+        [Split, Rest] ->
+            [Split | binary_split_global(Rest, Pattern)];
+        Rest ->
+            Rest
+    end.
+
 content_length([]) ->
     {ok, undefined};
 content_length([<<"Content-Length: ", Rest/binary>> | _T]) ->
@@ -199,11 +207,11 @@ split_headers(Data, #bin_patterns {rn = Rn, rnrn = Rnrn}) ->
     case binary:split(Data, Rnrn) of
         [Data] ->
             {error, not_enough_data};
-        [Headers, Body] ->
-            Headers2 = binary:split(Headers, Rn, [global]),
+        [Headers, Rest] ->
+            Headers2 = binary_split_global(Headers, Rn),
             case content_length(Headers2) of
                 {ok, ContentLength} ->
-                    {ContentLength, Headers2, Body};
+                    {ContentLength, Headers2, Rest};
                 {error, Reason} ->
                     {error, Reason}
             end

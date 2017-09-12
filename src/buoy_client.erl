@@ -17,7 +17,8 @@
     bin_patterns        :: tuple(),
     buffer       = <<>> :: binary(),
     requests_in  = 0    :: non_neg_integer(),
-    requests_out = 0    :: non_neg_integer()
+    requests_out = 0    :: non_neg_integer(),
+    response            :: undefined | buoy_resp()
 }).
 
 -type state() :: #state {}.
@@ -74,13 +75,20 @@ responses(<<>>, Requests, State, Responses) ->
         requests_in = Requests
     }};
 responses(Data, Requests, #state {
-        bin_patterns = BinPatterns
+        bin_patterns = BinPatterns,
+        response = Response
     } = State, Responses) ->
 
-    case buoy_protocol:response(Data, undefined, BinPatterns) of
-        {ok, Response, Rest} ->
-            Responses2 = [{Requests, {ok, Response}} | Responses],
+    case buoy_protocol:response(Data, Response, BinPatterns) of
+        {ok, #buoy_resp {state = done} = Response2, Rest} ->
+            Responses2 = [{Requests, {ok, Response2}} | Responses],
             responses(Rest, Requests + 1, State, Responses2);
+        {ok, #buoy_resp {} = Response2, Rest} ->
+            {ok, Responses, State#state {
+                buffer = Rest,
+                requests_in = Requests,
+                response = Response2
+            }};
         {error, not_enough_data} ->
             {ok, Responses, State#state {
                 buffer = Data,
