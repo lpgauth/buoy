@@ -55,7 +55,7 @@ request(Method, Path, Headers, Host, Body) ->
         <<"\r\nConnection: Keep-alive\r\n">>,
         <<"User-Agent: buoy\r\n">>,
         format_headers(Headers2), <<"\r\n">>,
-        Body, <<"\r\n">>].
+        Body].
 
 -spec response(binary()) ->
     {ok, buoy_resp(), binary()} | error().
