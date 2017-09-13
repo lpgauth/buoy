@@ -28,8 +28,15 @@ request_test() ->
         <<"127.0.0.1:8080">>, <<"Hello World!">>),
     ?assertEqual(<<"POST / HTTP/1.1\r\nHost: 127.0.0.1:8080\r\n",
         "Connection: Keep-alive\r\nUser-Agent: buoy\r\n",
-        "Content-Length: 12\r\n\r\nHello World!\r\n">>,
-        iolist_to_binary(Request2)).
+        "Content-Length: 12\r\n\r\nHello World!">>,
+        iolist_to_binary(Request2)),
+
+    Request3 = buoy_protocol:request(put, <<"/">>, [],
+        <<"127.0.0.1:8080">>, <<"Hello World!">>),
+    ?assertEqual(<<"PUT / HTTP/1.1\r\nHost: 127.0.0.1:8080\r\n",
+        "Connection: Keep-alive\r\nUser-Agent: buoy\r\n",
+        "Content-Length: 12\r\n\r\nHello World!">>,
+        iolist_to_binary(Request3)).
 
 response_test_() -> [
         fun response_200_subtest/0,
