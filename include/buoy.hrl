@@ -25,12 +25,12 @@
 -type host()          :: binary().
 -type hostname()      :: binary().
 -type method()        :: get | post.
--type option()        :: backlog_size |
-                         pool_size |
-                         pool_strategy |
-                         reconnect |
-                         reconnect_time_max |
-                         reconnect_time_min.
+-type option()        :: {backlog_size, pos_integer()} |
+                         {pool_size, pos_integer()} |
+                         {pool_strategy, random | round_robin} |
+                         {reconnect, boolean()} |
+                         {reconnect_time_max, pos_integer() | infinity} |
+                         {reconnect_time_min, pos_integer()}.
 -type options()       :: [option()].
 -type path()          :: binary().
 -type protocol_http() :: http | https.
