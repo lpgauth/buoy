@@ -28,7 +28,7 @@ request_test() ->
         <<"127.0.0.1:8080">>, <<"Hello World!">>),
     ?assertEqual(<<"POST / HTTP/1.1\r\nHost: 127.0.0.1:8080\r\n",
         "Connection: Keep-alive\r\nUser-Agent: buoy\r\n",
-        "Content-Length: 12\r\n\r\nHello World!\r\n">>,
+        "Content-Length: 12\r\n\r\nHello World!">>,
         iolist_to_binary(Request2)).
 
 response_test_() -> [
