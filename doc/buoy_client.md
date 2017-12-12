@@ -156,7 +156,7 @@ protocol_http() = http | https
 
 
 <pre><code>
-state() = #state{buffer = binary(), requests_in = non_neg_integer(), requests_out = non_neg_integer()}
+state() = #state{bin_patterns = tuple(), buffer = binary(), requests_in = non_neg_integer(), requests_out = non_neg_integer(), response = undefined | <a href="#type-buoy_resp">buoy_resp()</a>}
 </code></pre>
 
 

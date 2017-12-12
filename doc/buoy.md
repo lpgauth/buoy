@@ -224,7 +224,7 @@ time() = pos_integer()
 ## Function Index ##
 
 
-<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#async_get-1">async_get/1</a></td><td></td></tr><tr><td valign="top"><a href="#async_get-2">async_get/2</a></td><td></td></tr><tr><td valign="top"><a href="#async_get-3">async_get/3</a></td><td></td></tr><tr><td valign="top"><a href="#async_post-1">async_post/1</a></td><td></td></tr><tr><td valign="top"><a href="#async_post-2">async_post/2</a></td><td></td></tr><tr><td valign="top"><a href="#async_post-3">async_post/3</a></td><td></td></tr><tr><td valign="top"><a href="#async_post-4">async_post/4</a></td><td></td></tr><tr><td valign="top"><a href="#async_request-6">async_request/6</a></td><td></td></tr><tr><td valign="top"><a href="#get-1">get/1</a></td><td></td></tr><tr><td valign="top"><a href="#get-2">get/2</a></td><td></td></tr><tr><td valign="top"><a href="#get-3">get/3</a></td><td></td></tr><tr><td valign="top"><a href="#post-1">post/1</a></td><td></td></tr><tr><td valign="top"><a href="#post-2">post/2</a></td><td></td></tr><tr><td valign="top"><a href="#post-3">post/3</a></td><td></td></tr><tr><td valign="top"><a href="#post-4">post/4</a></td><td></td></tr><tr><td valign="top"><a href="#receive_response-1">receive_response/1</a></td><td></td></tr><tr><td valign="top"><a href="#request-5">request/5</a></td><td></td></tr></table>
+<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#async_get-1">async_get/1</a></td><td></td></tr><tr><td valign="top"><a href="#async_get-2">async_get/2</a></td><td></td></tr><tr><td valign="top"><a href="#async_get-3">async_get/3</a></td><td></td></tr><tr><td valign="top"><a href="#async_get-4">async_get/4</a></td><td></td></tr><tr><td valign="top"><a href="#async_post-1">async_post/1</a></td><td></td></tr><tr><td valign="top"><a href="#async_post-2">async_post/2</a></td><td></td></tr><tr><td valign="top"><a href="#async_post-3">async_post/3</a></td><td></td></tr><tr><td valign="top"><a href="#async_post-4">async_post/4</a></td><td></td></tr><tr><td valign="top"><a href="#async_request-6">async_request/6</a></td><td></td></tr><tr><td valign="top"><a href="#get-1">get/1</a></td><td></td></tr><tr><td valign="top"><a href="#get-2">get/2</a></td><td></td></tr><tr><td valign="top"><a href="#get-3">get/3</a></td><td></td></tr><tr><td valign="top"><a href="#post-1">post/1</a></td><td></td></tr><tr><td valign="top"><a href="#post-2">post/2</a></td><td></td></tr><tr><td valign="top"><a href="#post-3">post/3</a></td><td></td></tr><tr><td valign="top"><a href="#post-4">post/4</a></td><td></td></tr><tr><td valign="top"><a href="#receive_response-1">receive_response/1</a></td><td></td></tr><tr><td valign="top"><a href="#request-5">request/5</a></td><td></td></tr></table>
 
 
 <a name="functions"></a>
@@ -255,6 +255,15 @@ async_get(Url::<a href="#type-buoy_url">buoy_url()</a>, Headers::<a href="#type-
 
 <pre><code>
 async_get(Url::<a href="#type-buoy_url">buoy_url()</a>, Headers::<a href="#type-headers">headers()</a>, Pid::pid()) -&gt; {ok, <a href="shackle.md#type-request_id">shackle:request_id()</a>} | <a href="#type-error">error()</a>
+</code></pre>
+<br />
+
+<a name="async_get-4"></a>
+
+### async_get/4 ###
+
+<pre><code>
+async_get(Url::<a href="#type-buoy_url">buoy_url()</a>, Headers::<a href="#type-headers">headers()</a>, Pid::pid(), Timeout::timeout()) -&gt; {ok, <a href="shackle.md#type-request_id">shackle:request_id()</a>} | <a href="#type-error">error()</a>
 </code></pre>
 <br />
 

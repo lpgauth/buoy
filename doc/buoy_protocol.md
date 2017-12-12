@@ -22,6 +22,16 @@ backlog_size() = pos_integer() | infinity
 
 
 
+### <a name="type-bin_patterns">bin_patterns()</a> ###
+
+
+<pre><code>
+bin_patterns() = #bin_patterns{rn = <a href="binary.md#type-cp">binary:cp()</a>, rnrn = <a href="binary.md#type-cp">binary:cp()</a>}
+</code></pre>
+
+
+
+
 ### <a name="type-body">body()</a> ###
 
 
@@ -204,12 +214,21 @@ time() = pos_integer()
 ## Function Index ##
 
 
-<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#headers-1">headers/1</a></td><td></td></tr><tr><td valign="top"><a href="#request-5">request/5</a></td><td></td></tr><tr><td valign="top"><a href="#response-1">response/1</a></td><td></td></tr><tr><td valign="top"><a href="#response-2">response/2</a></td><td></td></tr></table>
+<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#bin_patterns-0">bin_patterns/0</a></td><td></td></tr><tr><td valign="top"><a href="#headers-1">headers/1</a></td><td></td></tr><tr><td valign="top"><a href="#request-5">request/5</a></td><td></td></tr><tr><td valign="top"><a href="#response-1">response/1</a></td><td></td></tr><tr><td valign="top"><a href="#response-3">response/3</a></td><td></td></tr></table>
 
 
 <a name="functions"></a>
 
 ## Function Details ##
+
+<a name="bin_patterns-0"></a>
+
+### bin_patterns/0 ###
+
+<pre><code>
+bin_patterns() -&gt; <a href="#type-bin_patterns">bin_patterns()</a>
+</code></pre>
+<br />
 
 <a name="headers-1"></a>
 
@@ -238,12 +257,12 @@ response(Data::binary()) -&gt; {ok, <a href="#type-buoy_resp">buoy_resp()</a>, b
 </code></pre>
 <br />
 
-<a name="response-2"></a>
+<a name="response-3"></a>
 
-### response/2 ###
+### response/3 ###
 
 <pre><code>
-response(Data::binary(), Buoy_resp::undefined | <a href="#type-buoy_resp">buoy_resp()</a>) -&gt; {ok, <a href="#type-buoy_resp">buoy_resp()</a>, binary()} | <a href="#type-error">error()</a>
+response(Data::binary(), Buoy_resp::undefined | <a href="#type-buoy_resp">buoy_resp()</a>, BinPatterns::<a href="#type-bin_patterns">bin_patterns()</a>) -&gt; {ok, <a href="#type-buoy_resp">buoy_resp()</a>, binary()} | <a href="#type-error">error()</a>
 </code></pre>
 <br />
 
