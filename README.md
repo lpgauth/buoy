@@ -13,7 +13,6 @@ This HTTP client has been designed for HTTP 1.1 with keep-alive. For performance
 - Doesn't accept an arbitrary number of new lines in headers
 - Doesn't accept random capitalization of content-length header
 - Doesn't protect against malicious servers
-- Doesn't support chunked encoding
 
 ## API
 <a href="http://github.com/lpgauth/buoy/blob/master/doc/buoy.md#index" class="module">Function Index</a>

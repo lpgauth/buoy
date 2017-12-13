@@ -2,6 +2,20 @@
 -include_lib("buoy/include/buoy.hrl").
 -include_lib("eunit/include/eunit.hrl").
 
+-define(BASE_URL, <<"http://127.0.0.1:8080">>).
+
+-define(RESP_1, #buoy_resp {status_code = 200, content_length = 12}).
+-define(RESP_2, #buoy_resp {status_code = 200, content_length = 12000}).
+-define(RESP_3, #buoy_resp {status_code = 200, content_length = 0}).
+-define(RESP_4, #buoy_resp {status_code = 200, content_length = chunked}).
+
+-define(URL_1, <<?BASE_URL/binary, "/1">>).
+-define(URL_2, <<?BASE_URL/binary, "/2">>).
+-define(URL_3, <<?BASE_URL/binary, "/3">>).
+-define(URL_4, <<?BASE_URL/binary, "/4">>).
+
+-define(URL(Url), buoy_utils:parse_url(Url)).
+
 %% runners
 buoy_test_() ->
     {setup,
@@ -13,22 +27,13 @@ buoy_test_() ->
         fun post_subtest/0
     ]}.
 
--define(RESP_1, #buoy_resp {status_code = 200, content_length = 12}).
--define(RESP_2, #buoy_resp {status_code = 200, content_length = 12000}).
--define(RESP_3, #buoy_resp {status_code = 200, content_length = 0}).
-
--define(URL_1, <<"http://127.0.0.1:8080/1">>).
--define(URL_2, <<"http://127.0.0.1:8080/2">>).
--define(URL_3, <<"http://127.0.0.1:8080/3">>).
-
--define(URL(Url), buoy_utils:parse_url(Url)).
-
 %% tests
 get_subtest() ->
     {ok, ReqId} = buoy:async_get(?URL(?URL_1)),
     {ok, ?RESP_1} = buoy:receive_response(ReqId),
     {ok, ?RESP_1} = buoy:get(?URL(?URL_1)),
-    {ok, ?RESP_2} = buoy:get(?URL(?URL_2)).
+    {ok, ?RESP_2} = buoy:get(?URL(?URL_2)),
+    {ok, ?RESP_4} = buoy:get(?URL(?URL_4)).
 
 pool_subtest() ->
     {error, pool_already_started} = buoy_pool:start(?URL(?URL_1)),

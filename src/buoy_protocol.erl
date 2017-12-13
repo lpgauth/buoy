@@ -102,6 +102,20 @@ response(Data, undefined, BinPatterns) ->
     end;
 response(Data, #buoy_resp {
         state = body,
+        content_length = chunked
+    } = Response, BinPatterns) ->
+
+    case parse_chunks(Data, BinPatterns) of
+        {ok, Body, Rest} ->
+            {ok, Response#buoy_resp {
+                state = done,
+                body = Body
+            }, Rest};
+        {error, Reason} ->
+            {error, Reason}
+    end;
+response(Data, #buoy_resp {
+        state = body,
         content_length = ContentLength
     } = Response, _BinPatterns) when size(Data) >= ContentLength ->
 
@@ -113,9 +127,9 @@ response(Data, #buoy_resp {
     }, Rest};
 response(Data, #buoy_resp {
         state = body
-    } = Resp, _BinPatterns) ->
+    } = Response, _BinPatterns) ->
 
-    {ok, Resp, Data}.
+    {ok, Response, Data}.
 
 %% private
 binary_split_global(Bin, Pattern) ->
@@ -127,15 +141,15 @@ binary_split_global(Bin, Pattern) ->
     end.
 
 content_length([]) ->
-    {ok, undefined};
+    undefined;
 content_length([<<"Content-Length: ", Rest/binary>> | _T]) ->
-    {ok, binary_to_integer(Rest)};
+    binary_to_integer(Rest);
 content_length([<<"content-length: ", Rest/binary>> | _T]) ->
-    {ok, binary_to_integer(Rest)};
+    binary_to_integer(Rest);
 content_length([<<"Transfer-Encoding: chunked">> | _T]) ->
-    {error, unsupported_feature};
+    chunked;
 content_length([<<"transfer-encoding: chunked">> | _T]) ->
-    {error, unsupported_feature};
+    chunked;
 content_length([_ | T]) ->
     content_length(T).
 
@@ -149,6 +163,48 @@ format_headers(Headers) ->
 
 format_header({Key, Value}) ->
     [Key, <<": ">>, Value, <<"\r\n">>].
+
+parse_chunks(Data, BinPatterns) ->
+    parse_chunks(Data, BinPatterns, []).
+
+parse_chunks(Data, BinPatterns, Acc) ->
+    case parse_chunk(Data, BinPatterns) of
+        {ok, <<>>, Rest} ->
+            {ok, iolist_to_binary(lists:reverse(Acc)), Rest};
+        {ok, Body, Rest} ->
+            parse_chunks(Rest, BinPatterns, [Body | Acc]);
+        {error, Reason} ->
+            {error, Reason}
+    end.
+
+parse_chunk(Data, #bin_patterns {rn = Rn}) ->
+    case binary:split(Data, Rn) of
+        [Size, Rest] ->
+            case parse_chunk_size(Size) of
+                undefined ->
+                    {error, invalid_chunk_size};
+                Size2 ->
+                    parse_chunk_body(Rest, Size2)
+            end;
+        [Data] ->
+            {error, not_enough_data}
+    end.
+
+parse_chunk_body(Data, Size) ->
+    case Data of
+        <<Body:Size/binary, "\r\n", Rest/binary>> ->
+            {ok, Body, Rest};
+        _ ->
+            {error, not_enough_data}
+    end.
+
+parse_chunk_size(Bin) ->
+    try
+        binary_to_integer(Bin, 16)
+    catch
+        error:badarg ->
+            undefined
+    end.
 
 parse_headers([], Acc) ->
     {ok, lists:reverse(Acc)};
@@ -209,10 +265,6 @@ split_headers(Data, #bin_patterns {rn = Rn, rnrn = Rnrn}) ->
             {error, not_enough_data};
         [Headers, Rest] ->
             Headers2 = binary_split_global(Headers, Rn),
-            case content_length(Headers2) of
-                {ok, ContentLength} ->
-                    {ContentLength, Headers2, Rest};
-                {error, Reason} ->
-                    {error, Reason}
-            end
+            ContentLength = content_length(Headers2),
+            {ContentLength, Headers2, Rest}
     end.
