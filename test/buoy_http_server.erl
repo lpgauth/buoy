@@ -39,7 +39,12 @@ handle(Req, State) ->
             reply(200, Body, Req2, State);
         {<<"3">>, Req2} ->
             {ok, Body, Req3} = cowboy_req:body(Req2),
-            reply(200, Body, Req3, State)
+            reply(200, Body, Req3, State);
+        {<<"4">>, Req2} ->
+            {ok, Req3} = cowboy_req:chunked_reply(200, Req2),
+            ok = cowboy_req:chunk("Hello", Req3),
+            ok = cowboy_req:chunk(" world!", Req3),
+            {ok, Req3, State}
     end.
 
 terminate(_Reason, _Req, _State) ->
