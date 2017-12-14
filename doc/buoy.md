@@ -36,7 +36,7 @@ body() = undefined | iodata()
 
 
 <pre><code>
-buoy_resp() = #buoy_resp{state = body | done, body = undefined | binary(), content_length = undefined | non_neg_integer(), headers = undefined | [binary()], reason = undefined | binary(), status_code = undefined | 100..505}
+buoy_resp() = #buoy_resp{state = body | done, body = undefined | binary(), content_length = undefined | non_neg_integer() | chunked, headers = undefined | [binary()], reason = undefined | binary(), status_code = undefined | 100..505}
 </code></pre>
 
 
