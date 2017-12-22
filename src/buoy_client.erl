@@ -42,12 +42,12 @@ setup(_Socket, State) ->
     {ok, non_neg_integer(), iodata(), state()}.
 
 handle_request({request, Method, Path, Headers, Host, Body}, #state {
-        requests_out = Requests
+        requests_out = RequestsOut
     } = State) ->
 
     Request = buoy_protocol:request(Method, Path, Headers, Host, Body),
-    {ok, Requests, Request, State#state {
-        requests_out = Requests + 1
+    {ok, RequestsOut, Request, State#state {
+        requests_out = RequestsOut + 1
     }}.
 
 -spec handle_data(binary(), state()) ->
@@ -55,12 +55,23 @@ handle_request({request, Method, Path, Headers, Host, Body}, #state {
     {error, atom(), state()}.
 
 handle_data(Data, #state {
+        bin_patterns = BinPatterns,
         buffer = Buffer,
-        requests_in = Requests
+        requests_in = RequestsIn,
+        response = Response
     } = State) ->
 
     Data2 = <<Buffer/binary, Data/binary>>,
-    responses(Data2, Requests, State, []).
+    case responses(Data2, RequestsIn, Response, BinPatterns, []) of
+        {ok, RequestsIn2, Response2, Responses, Rest} ->
+            {ok, Responses, State#state {
+                buffer = Rest,
+                requests_in = RequestsIn2,
+                response = Response2
+            }};
+        {error, Reason} ->
+            {error, Reason, State}
+    end.
 
 -spec terminate(state()) ->
     ok.
@@ -69,31 +80,17 @@ terminate(_State) ->
     ok.
 
 %% private
-responses(<<>>, Requests, State, Responses) ->
-    {ok, Responses, State#state {
-        buffer = <<>>,
-        requests_in = Requests
-    }};
-responses(Data, Requests, #state {
-        bin_patterns = BinPatterns,
-        response = Response
-    } = State, Responses) ->
-
+responses(<<>>, RequestsIn, Response, _BinPatterns, Responses) ->
+    {ok, RequestsIn, Response, Responses, <<>>};
+responses(Data, RequestsIn, Response, BinPatterns, Responses) ->
     case buoy_protocol:response(Data, Response, BinPatterns) of
         {ok, #buoy_resp {state = done} = Response2, Rest} ->
-            Responses2 = [{Requests, {ok, Response2}} | Responses],
-            responses(Rest, Requests + 1, State, Responses2);
+            Responses2 = [{RequestsIn, {ok, Response2}} | Responses],
+            responses(Rest, RequestsIn + 1, undefined, BinPatterns, Responses2);
         {ok, #buoy_resp {} = Response2, Rest} ->
-            {ok, Responses, State#state {
-                buffer = Rest,
-                requests_in = Requests,
-                response = Response2
-            }};
+            {ok, RequestsIn, Response2, Responses, Rest};
         {error, not_enough_data} ->
-            {ok, Responses, State#state {
-                buffer = Data,
-                requests_in = Requests
-            }};
-        {error, Reason} ->
-            {error, Reason, State}
+            {ok, RequestsIn, Response, Responses, Data};
+        {error, _Reason} = E ->
+            E
     end.
