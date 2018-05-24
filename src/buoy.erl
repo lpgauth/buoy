@@ -17,6 +17,7 @@
     async_post/2,
     async_post/3,
     async_post/4,
+    async_post/5,
     async_request/6,
     get/1,
     get/2,
