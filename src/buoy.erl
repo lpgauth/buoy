@@ -1,10 +1,6 @@
 -module(buoy).
 -include("buoy_internal.hrl").
 
--ignore_xref([
-    {buoy_pool_utils, name, 3}
-]).
-
 -compile(inline).
 -compile({inline_size, 512}).
 
@@ -96,7 +92,7 @@ async_request(Method, #buoy_url {
         path = Path
     }, Headers, Body, Pid, Timeout) ->
 
-    PoolName = buoy_pool_utils:name(Protocol, Hostname, Port),
+    PoolName = pool_name(Protocol, Hostname, Port),
     cast(PoolName, {request, Method, Path, Headers, Host, Body}, Pid, Timeout).
 
 -spec get(buoy_url()) ->
@@ -158,16 +154,19 @@ request(Method, #buoy_url {
         path = Path
     }, Headers, Body, Timeout) ->
 
-    PoolName = buoy_pool_utils:name(Protocol, Hostname, Port),
+    PoolName = pool_name(Protocol, Hostname, Port),
     call(PoolName, {request, Method, Path, Headers, Host, Body}, Timeout).
 
 %% private
-cast(undefined, _Request, _Pid, _Timeout) ->
+cast({error, key_not_found}, _Request, _Pid, _Timeout) ->
     {error, pool_not_started};
-cast(PoolName, Request, Pid, Timeout) ->
+cast({ok, PoolName}, Request, Pid, Timeout) ->
     shackle:cast(PoolName, Request, Pid, Timeout).
 
-call(undefined, _Request, _Timeout) ->
+call({error, key_not_found}, _Request, _Timeout) ->
     {error, pool_not_started};
-call(PoolName, Request, Timeout) ->
+call({ok, PoolName}, Request, Timeout) ->
     shackle:call(PoolName, Request, Timeout).
+
+pool_name(Protocol, Hostname, Port) ->
+    foil:lookup(buoy_pool, {Protocol, Hostname, Port}).
