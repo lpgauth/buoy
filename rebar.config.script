@@ -3,6 +3,8 @@ Config = case erlang:function_exported(rebar3, main, 1) of
         CONFIG;
     false ->
         [{deps, [
+            {foil, ".*",
+                {git, "https://github.com/lpgauth/foil.git", {tag, "0.1.2"}}},
             {shackle, ".*",
                 {git, "https://github.com/lpgauth/shackle.git", {tag, "0.5.1"}}}
         ]} | lists:keydelete(deps, 1, CONFIG)]
