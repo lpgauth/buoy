@@ -17,7 +17,8 @@ init() ->
         named_table,
         public
     ]),
-    buoy_compiler:pool_utils().
+    foil:new(?MODULE),
+    foil:load(?MODULE).
 
 -spec start(buoy_url()) ->
     ok | {error, pool_already_started | shackle_not_started}.
@@ -40,8 +41,10 @@ start(#buoy_url {
 
     case shackle_pool:start(Name, ?CLIENT, ClientOptions, PoolOptions) of
         ok ->
-            ets:insert(?ETS_TABLE_POOL, {{Protocol, Hostname, Port}, Name}),
-            buoy_compiler:pool_utils();
+            Key = {Protocol, Hostname, Port},
+            ets:insert(?ETS_TABLE_POOL, {Key, Name}),
+            ok = foil:insert(?MODULE, Key, Name),
+            ok = foil:load(?MODULE);
         {error, Reason} ->
             {error, Reason}
     end.
@@ -55,11 +58,13 @@ stop(#buoy_url {
         port = Port
     }) ->
 
-    case ets:take(?ETS_TABLE_POOL, {Protocol, Hostname, Port}) of
+    Key = {Protocol, Hostname, Port},
+    case ets:take(?ETS_TABLE_POOL, Key) of
         [] ->
             {error, pool_not_started};
         [{_, Name}] ->
-            buoy_compiler:pool_utils(),
+            foil:delete(?MODULE, Key),
+            foil:load(?MODULE),
             shackle_pool:stop(Name)
     end.
 
