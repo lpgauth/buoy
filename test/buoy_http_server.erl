@@ -5,55 +5,46 @@
     stop/0
 ]).
 
--behavior(cowboy_http_handler).
 -export([
-    init/3,
-    handle/2,
-    terminate/3
+    init/2
 ]).
 
-%% pbulic
+%% public
 start() ->
     application:ensure_all_started(cowboy),
     Dispatch = cowboy_router:compile([{'_', [
         {"/:test", ?MODULE, []}]}]),
-    {ok, _} = cowboy:start_http(?MODULE, 16, [{port, 8080}], [
-        {env, [{dispatch, Dispatch}]},
-        {max_keepalive, infinity},
-        {timeout, infinity}
-    ]).
+    {ok, _} = cowboy:start_clear(?MODULE, [{port, 8080}], #{
+        env => #{dispatch => Dispatch},
+        max_keepalive => infinity,
+        request_timeout => infinity
+    }).
 
 stop() ->
     cowboy:stop_listener(?MODULE).
 
-%% cowboy_handler callbacks
-init(_Type, Req, []) ->
-    {ok, Req, undefined}.
-
-handle(Req, State) ->
+%% cowboy callbacks
+init(Req, State) ->
     case cowboy_req:binding(test, Req) of
-        {<<"1">>, Req2} ->
-            reply(200, <<"Hello world!">>, Req2, State);
-        {<<"2">>, Req2} ->
+        <<"1">> ->
+            reply(200, <<"Hello world!">>, Req, State);
+        <<"2">> ->
             Body = [<<"Hello world!">> || _ <- lists:seq(1, 1000)],
+            reply(200, Body, Req, State);
+        <<"3">> ->
+            {ok, Body, Req2} = cowboy_req:read_body(Req),
             reply(200, Body, Req2, State);
-        {<<"3">>, Req2} ->
-            {ok, Body, Req3} = cowboy_req:body(Req2),
-            reply(200, Body, Req3, State);
-        {<<"4">>, Req2} ->
-            {ok, Req3} = cowboy_req:chunked_reply(200, Req2),
-            ok = cowboy_req:chunk("Hello", Req3),
-            ok = cowboy_req:chunk(" world!", Req3),
-            {ok, Req3, State}
+        <<"4">> ->
+            Req2 = cowboy_req:stream_reply(200, Req),
+            ok = cowboy_req:stream_body("Hello", nofin, Req2),
+            ok = cowboy_req:stream_body(" world!", fin, Req2),
+            {ok, Req2, State}
     end.
-
-terminate(_Reason, _Req, _State) ->
-    ok.
 
 %% private
 reply(StatusCode, Body, Req, State) ->
-    {ok, Req2} = cowboy_req:reply(StatusCode, [
-        {<<"Content-Type">>, <<"text/plain">>},
-        {<<"Connection">>, <<"Keep-Alive">>}
-    ], Body, Req),
+    Req2 = cowboy_req:reply(StatusCode, #{
+        <<"Content-Type">> => <<"text/plain">>,
+        <<"Connection">> => <<"Keep-Alive">>
+    }, Body, Req),
     {ok, Req2, State}.
