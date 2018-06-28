@@ -38,7 +38,10 @@ init(Req, State) ->
             Req2 = cowboy_req:stream_reply(200, Req),
             ok = cowboy_req:stream_body("Hello", nofin, Req2),
             ok = cowboy_req:stream_body(" world!", fin, Req2),
-            {ok, Req2, State}
+            {ok, Req2, State};
+        <<"5">> ->
+            Verb = cowboy_req:method(Req),
+            reply(200, Verb, Req, State)
     end.
 
 %% private
