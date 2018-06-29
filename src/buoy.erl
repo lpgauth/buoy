@@ -5,6 +5,11 @@
 -compile({inline_size, 512}).
 
 -export([
+    async_custom/2,
+    async_custom/3,
+    async_custom/4,
+    async_custom/5,
+    async_custom/6,
     async_get/1,
     async_get/2,
     async_get/3,
@@ -15,6 +20,10 @@
     async_post/4,
     async_post/5,
     async_request/6,
+    custom/2,
+    custom/3,
+    custom/4,
+    custom/5,
     get/1,
     get/2,
     get/3,
@@ -27,6 +36,36 @@
 ]).
 
 %% public
+-spec async_custom(binary(), buoy_url()) ->
+    {ok, shackle:request_id()} | error().
+
+async_custom(Verb, Url) ->
+    async_custom(Verb, Url, ?DEFAULT_HEADERS).
+
+-spec async_custom(binary(), buoy_url(), headers()) ->
+    {ok, shackle:request_id()} | error().
+
+async_custom(Verb, Url, Headers) ->
+    async_custom(Verb, Url, Headers, ?DEFAULT_BODY).
+
+-spec async_custom(binary(), buoy_url(), headers(), body()) ->
+    {ok, shackle:request_id()} | error().
+
+async_custom(Verb, Url, Headers, Body) ->
+    async_custom(Verb, Url, Headers, Body, self()).
+
+-spec async_custom(binary(), buoy_url(), headers(), body(), pid()) ->
+    {ok, shackle:request_id()} | error().
+
+async_custom(Verb, Url, Headers, Body, Pid) ->
+    async_custom(Verb, Url, Headers, Body, Pid, ?DEFAULT_TIMEOUT).
+
+-spec async_custom(binary(), buoy_url(), headers(), body(), pid(), timeout()) ->
+    {ok, shackle:request_id()} | error().
+
+async_custom(Verb, Url, Headers, Body, Pid, Timeout) ->
+    async_request({custom, Verb}, Url, Headers, Body, Pid, Timeout).
+
 -spec async_get(buoy_url()) ->
     {ok, shackle:request_id()} | error().
 
@@ -94,6 +133,30 @@ async_request(Method, #buoy_url {
 
     PoolName = pool_name(Protocol, Hostname, Port),
     cast(PoolName, {request, Method, Path, Headers, Host, Body}, Pid, Timeout).
+
+-spec custom(binary(), buoy_url()) ->
+    {ok, buoy_resp()} | error().
+
+custom(Verb, Url) ->
+    custom(Verb, Url, ?DEFAULT_HEADERS).
+
+-spec custom(binary(), buoy_url(), headers()) ->
+    {ok, buoy_resp()} | error().
+
+custom(Verb, Url, Headers) ->
+    custom(Verb, Url, Headers, ?DEFAULT_BODY).
+
+-spec custom(binary(), buoy_url(), headers(), body()) ->
+    {ok, buoy_resp()} | error().
+
+custom(Verb, Url, Headers, Body) ->
+    custom(Verb, Url, Headers, Body, ?DEFAULT_TIMEOUT).
+
+-spec custom(binary(), buoy_url(), headers(), body(), timeout()) ->
+    {ok, buoy_resp()} | error().
+
+custom(Verb, Url, Headers, Body, Timeout) ->
+    request({custom, Verb}, Url, Headers, Body, Timeout).
 
 -spec get(buoy_url()) ->
     {ok, buoy_resp()} | error().

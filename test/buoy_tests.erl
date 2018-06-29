@@ -9,10 +9,13 @@
 -define(RESP_3, #buoy_resp {status_code = 200, content_length = 0}).
 -define(RESP_4, #buoy_resp {status_code = 200, content_length = chunked}).
 
+-define(VERB, <<"DEFROBNICATE">>). % because 12 characters
+
 -define(URL_1, <<?BASE_URL/binary, "/1">>).
 -define(URL_2, <<?BASE_URL/binary, "/2">>).
 -define(URL_3, <<?BASE_URL/binary, "/3">>).
 -define(URL_4, <<?BASE_URL/binary, "/4">>).
+-define(URL_5, <<?BASE_URL/binary, "/5">>).
 
 -define(URL(Url), buoy_utils:parse_url(Url)).
 
@@ -22,12 +25,20 @@ buoy_test_() ->
         fun () -> setup() end,
         fun (_) -> cleanup() end,
     [
+        fun custom_subtest/0,
         fun get_subtest/0,
         fun pool_subtest/0,
         fun post_subtest/0
     ]}.
 
 %% tests
+custom_subtest() ->
+    {ok, ReqId} = buoy:async_custom(?VERB, ?URL(?URL_5)),
+    {ok, ?RESP_1} = buoy:receive_response(ReqId),
+    {ok, ?RESP_1} = buoy:custom(<<"GET">>, ?URL(?URL_1)),
+    {ok, ?RESP_3} = buoy:custom(<<"POST">>, ?URL(?URL_3)),
+    {ok, ?RESP_1} = buoy:custom(?VERB, ?URL(?URL_5)).
+
 get_subtest() ->
     {ok, ReqId} = buoy:async_get(?URL(?URL_1)),
     {ok, ?RESP_1} = buoy:receive_response(ReqId),
