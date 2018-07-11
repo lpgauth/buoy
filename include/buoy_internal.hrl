@@ -14,6 +14,7 @@
 -define(DEFAULT_BODY, undefined).
 -define(DEFAULT_HEADERS, []).
 -define(DEFAULT_IP, "127.0.0.1").
+-define(DEFAULT_PID, self()).
 -define(DEFAULT_POOL_OPTIONS, []).
 -define(DEFAULT_POOL_SIZE, 16).
 -define(DEFAULT_POOL_STRATEGY, random).

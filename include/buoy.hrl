@@ -18,13 +18,17 @@
 
 %% types
 -type body()          :: undefined | iodata().
+-type buoy_opts()     :: #{headers => headers(),
+                           body    => body(),
+                           pid     => pid(),
+                           timeout => non_neg_integer()}.
 -type buoy_resp()     :: #buoy_resp {}.
 -type buoy_url()      :: #buoy_url {}.
 -type error()         :: {error, term()}.
 -type headers()       :: [{iodata(), iodata()}].
 -type host()          :: binary().
 -type hostname()      :: binary().
--type method()        :: get | post | {custom, binary()}.
+-type method()        :: get | post | put | {custom, binary()}.
 -type option()        :: {backlog_size, pos_integer()} |
                          {pool_size, pos_integer()} |
                          {pool_strategy, random | round_robin} |
