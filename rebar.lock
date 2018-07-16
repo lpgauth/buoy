@@ -5,10 +5,12 @@
   0},
  {<<"granderl">>,{pkg,<<"granderl">>,<<"0.1.5">>},1},
  {<<"metal">>,{pkg,<<"metal">>,<<"0.1.1">>},1},
- {<<"shackle">>,{pkg,<<"shackle">>,<<"0.5.4">>},0}]}.
+ {<<"shackle">>,
+  {git,"https://github.com/lpgauth/shackle.git",
+       {ref,"d8a837c36f6e675e91b7e78f249f233c78f45cd5"}},
+  0}]}.
 [
 {pkg_hash,[
  {<<"granderl">>, <<"F20077A68BD80B8D8783BD15A052813C6483771DEC1A5B837D307CBE92F14122">>},
- {<<"metal">>, <<"5D3D1322DA7BCD34B94FED5486F577973685298883954F7A3E517EF5EF6953F5">>},
- {<<"shackle">>, <<"0234BA60D897CE8A3CCC5A9CDC09DB015B7BDDC1F8494D172AB767814F9DA460">>}]}
+ {<<"metal">>, <<"5D3D1322DA7BCD34B94FED5486F577973685298883954F7A3E517EF5EF6953F5">>}]}
 ].

@@ -6,7 +6,7 @@
 
 -behavior(shackle_client).
 -export([
-    init/0,
+    init/1,
     setup/2,
     handle_request/2,
     handle_data/2,
@@ -24,10 +24,10 @@
 -type state() :: #state {}.
 
 %% shackle_server callbacks
--spec init() ->
+-spec init(undefined) ->
     {ok, state()}.
 
-init() ->
+init(_Opts) ->
     {ok, #state {
         bin_patterns = buoy_protocol:bin_patterns()
     }}.
