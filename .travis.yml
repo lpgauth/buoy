@@ -1,17 +1,6 @@
-addons:
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-    packages:
-      - gcc-5
 cache:
   directories:
     - $HOME/.cache/rebar3
-    - $TRAVIS_BUILD_DIR/_build
-dist: trusty
-env:
-  - CC=gcc-5
-group: edge
 install: true
 language: erlang
 notifications:
@@ -21,4 +10,3 @@ otp_release:
   - 20.3
   - 19.3
 script: "make travis"
-sudo: required
