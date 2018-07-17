@@ -66,7 +66,7 @@ buoy_url() = #buoy_url{host = <a href="#type-host">host()</a>, hostname = <a hre
 
 
 <pre><code>
-client_option() = {ip, <a href="inet.md#type-ip_address">inet:ip_address()</a> | <a href="inet.md#type-hostname">inet:hostname()</a>} | {port, <a href="inet.md#type-port_number">inet:port_number()</a>} | {protocol, <a href="#type-protocol">protocol()</a>} | {reconnect, boolean()} | {reconnect_time_max, <a href="#type-time">time()</a> | infinity} | {reconnect_time_min, <a href="#type-time">time()</a>} | {socket_options, [<a href="gen_tcp.md#type-connect_option">gen_tcp:connect_option()</a> | <a href="gen_udp.md#type-option">gen_udp:option()</a>]}
+client_option() = {init_options, <a href="#type-init_options">init_options()</a>} | {ip, <a href="inet.md#type-ip_address">inet:ip_address()</a> | <a href="inet.md#type-hostname">inet:hostname()</a>} | {port, <a href="inet.md#type-port_number">inet:port_number()</a>} | {protocol, <a href="#type-protocol">protocol()</a>} | {reconnect, boolean()} | {reconnect_time_max, <a href="#type-time">time()</a> | infinity} | {reconnect_time_min, <a href="#type-time">time()</a>} | {socket_options, [<a href="gen_tcp.md#type-connect_option">gen_tcp:connect_option()</a> | <a href="gen_udp.md#type-option">gen_udp:option()</a>]}
 </code></pre>
 
 
@@ -122,11 +122,21 @@ hostname() = binary()
 
 
 
+### <a name="type-init_options">init_options()</a> ###
+
+
+<pre><code>
+init_options() = term()
+</code></pre>
+
+
+
+
 ### <a name="type-method">method()</a> ###
 
 
 <pre><code>
-method() = get | post
+method() = get | post | put | {custom, binary()}
 </code></pre>
 
 
@@ -197,6 +207,26 @@ protocol() = shackle_ssl | shackle_tcp | shackle_udp
 
 <pre><code>
 protocol_http() = http | https
+</code></pre>
+
+
+
+
+### <a name="type-request_id">request_id()</a> ###
+
+
+<pre><code>
+request_id() = {<a href="#type-server_name">server_name()</a>, reference()}
+</code></pre>
+
+
+
+
+### <a name="type-server_name">server_name()</a> ###
+
+
+<pre><code>
+server_name() = atom()
 </code></pre>
 
 
