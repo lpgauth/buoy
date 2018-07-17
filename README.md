@@ -30,7 +30,7 @@ This HTTP client has been designed for HTTP 1.1 with keep-alive. For performance
 3> ok = buoy_pool:start(Url, [{pool_size, 1}]).
 ok
 
-4> {ok, Resp} = buoy:get(Url).
+4> {ok, Resp} = buoy:get(Url, #{timeout => 500}).
 {ok,{buoy_resp,done,
                <<"<!doctype html>\n<html>\n<head>\n    <title>Example Domain</title>\n\n    <meta charset=\"utf-8\" />\n  "...>>,
                1270,
