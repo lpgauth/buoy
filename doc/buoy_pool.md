@@ -46,7 +46,7 @@ buoy_url() = #buoy_url{host = <a href="#type-host">host()</a>, hostname = <a hre
 
 
 <pre><code>
-client_option() = {ip, <a href="inet.md#type-ip_address">inet:ip_address()</a> | <a href="inet.md#type-hostname">inet:hostname()</a>} | {port, <a href="inet.md#type-port_number">inet:port_number()</a>} | {protocol, <a href="#type-protocol">protocol()</a>} | {reconnect, boolean()} | {reconnect_time_max, <a href="#type-time">time()</a> | infinity} | {reconnect_time_min, <a href="#type-time">time()</a>} | {socket_options, [<a href="gen_tcp.md#type-connect_option">gen_tcp:connect_option()</a> | <a href="gen_udp.md#type-option">gen_udp:option()</a>]}
+client_option() = {init_options, <a href="#type-init_options">init_options()</a>} | {ip, <a href="inet.md#type-ip_address">inet:ip_address()</a> | <a href="inet.md#type-hostname">inet:hostname()</a>} | {port, <a href="inet.md#type-port_number">inet:port_number()</a>} | {protocol, <a href="#type-protocol">protocol()</a>} | {reconnect, boolean()} | {reconnect_time_max, <a href="#type-time">time()</a> | infinity} | {reconnect_time_min, <a href="#type-time">time()</a>} | {socket_options, [<a href="gen_tcp.md#type-connect_option">gen_tcp:connect_option()</a> | <a href="gen_udp.md#type-option">gen_udp:option()</a>]}
 </code></pre>
 
 
@@ -77,6 +77,16 @@ host() = binary()
 
 <pre><code>
 hostname() = binary()
+</code></pre>
+
+
+
+
+### <a name="type-init_options">init_options()</a> ###
+
+
+<pre><code>
+init_options() = term()
 </code></pre>
 
 
@@ -172,6 +182,26 @@ protocol_http() = http | https
 
 
 
+### <a name="type-request_id">request_id()</a> ###
+
+
+<pre><code>
+request_id() = {<a href="#type-server_name">server_name()</a>, reference()}
+</code></pre>
+
+
+
+
+### <a name="type-server_name">server_name()</a> ###
+
+
+<pre><code>
+server_name() = atom()
+</code></pre>
+
+
+
+
 ### <a name="type-time">time()</a> ###
 
 
@@ -184,7 +214,7 @@ time() = pos_integer()
 ## Function Index ##
 
 
-<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#init-0">init/0</a></td><td></td></tr><tr><td valign="top"><a href="#start-1">start/1</a></td><td></td></tr><tr><td valign="top"><a href="#start-2">start/2</a></td><td></td></tr><tr><td valign="top"><a href="#stop-1">stop/1</a></td><td></td></tr></table>
+<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#init-0">init/0</a></td><td></td></tr><tr><td valign="top"><a href="#lookup-3">lookup/3</a></td><td></td></tr><tr><td valign="top"><a href="#start-1">start/1</a></td><td></td></tr><tr><td valign="top"><a href="#start-2">start/2</a></td><td></td></tr><tr><td valign="top"><a href="#stop-1">stop/1</a></td><td></td></tr></table>
 
 
 <a name="functions"></a>
@@ -197,6 +227,15 @@ time() = pos_integer()
 
 <pre><code>
 init() -&gt; ok
+</code></pre>
+<br />
+
+<a name="lookup-3"></a>
+
+### lookup/3 ###
+
+<pre><code>
+lookup(Protocol::<a href="#type-protocol_http">protocol_http()</a>, Hostname::<a href="#type-hostname">hostname()</a>, Port::<a href="inet.md#type-port_number">inet:port_number()</a>) -&gt; {ok, atom()} | {error, pool_not_started}
 </code></pre>
 <br />
 

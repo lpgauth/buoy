@@ -46,6 +46,7 @@ handle_request({request, Method, Path, Headers, Host, Body}, #state {
     } = State) ->
 
     Request = buoy_protocol:request(Method, Path, Headers, Host, Body),
+
     {ok, RequestsOut, Request, State#state {
         requests_out = RequestsOut + 1
     }}.

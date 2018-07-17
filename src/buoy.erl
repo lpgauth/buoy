@@ -5,123 +5,46 @@
 -compile({inline_size, 512}).
 
 -export([
-    async_custom/2,
     async_custom/3,
-    async_custom/4,
-    async_custom/5,
-    async_custom/6,
-    async_get/1,
     async_get/2,
-    async_get/3,
-    async_get/4,
-    async_post/1,
     async_post/2,
-    async_post/3,
-    async_post/4,
-    async_post/5,
-    async_request/6,
-    custom/2,
+    async_put/2,
+    async_request/3,
     custom/3,
-    custom/4,
-    custom/5,
-    get/1,
     get/2,
-    get/3,
-    post/1,
     post/2,
-    post/3,
-    post/4,
+    put/2,
     receive_response/1,
-    request/5
+    request/3
 ]).
 
 %% public
--spec async_custom(binary(), buoy_url()) ->
+-spec async_custom(binary(), buoy_url(), buoy_opts()) ->
     {ok, shackle:request_id()} | error().
 
-async_custom(Verb, Url) ->
-    async_custom(Verb, Url, ?DEFAULT_HEADERS).
+async_custom(Verb, Url, BuoyOpts) ->
+    async_request({custom, Verb}, Url, BuoyOpts).
 
--spec async_custom(binary(), buoy_url(), headers()) ->
+-spec async_get(buoy_url(), buoy_opts()) ->
     {ok, shackle:request_id()} | error().
 
-async_custom(Verb, Url, Headers) ->
-    async_custom(Verb, Url, Headers, ?DEFAULT_BODY).
+async_get(Url, BuoyOpts) ->
+    async_request(get, Url, BuoyOpts).
 
--spec async_custom(binary(), buoy_url(), headers(), body()) ->
+-spec async_post(buoy_url(), buoy_opts()) ->
     {ok, shackle:request_id()} | error().
 
-async_custom(Verb, Url, Headers, Body) ->
-    async_custom(Verb, Url, Headers, Body, self()).
+async_post(Url, BuoyOpts) ->
+    async_request(post, Url, BuoyOpts).
 
--spec async_custom(binary(), buoy_url(), headers(), body(), pid()) ->
+-spec async_put(buoy_url(), buoy_opts()) ->
     {ok, shackle:request_id()} | error().
 
-async_custom(Verb, Url, Headers, Body, Pid) ->
-    async_custom(Verb, Url, Headers, Body, Pid, ?DEFAULT_TIMEOUT).
+async_put(Url, BuoyOpts) ->
+    async_request(put, Url, BuoyOpts).
 
--spec async_custom(binary(), buoy_url(), headers(), body(), pid(), timeout()) ->
+-spec async_request(method(), buoy_url(), buoy_opts()) ->
     {ok, shackle:request_id()} | error().
-
-async_custom(Verb, Url, Headers, Body, Pid, Timeout) ->
-    async_request({custom, Verb}, Url, Headers, Body, Pid, Timeout).
-
--spec async_get(buoy_url()) ->
-    {ok, shackle:request_id()} | error().
-
-async_get(Url) ->
-    async_get(Url, ?DEFAULT_HEADERS).
-
--spec async_get(buoy_url(), headers()) ->
-    {ok, shackle:request_id()} | error().
-
-async_get(Url, Headers) ->
-    async_get(Url, Headers, self()).
-
--spec async_get(buoy_url(), headers(), pid()) ->
-    {ok, shackle:request_id()} | error().
-
-async_get(Url, Headers, Pid) ->
-    async_get(Url, Headers, Pid, ?DEFAULT_TIMEOUT).
-
--spec async_get(buoy_url(), headers(), pid(), timeout()) ->
-    {ok, shackle:request_id()} | error().
-
-async_get(Url, Headers, Pid, Timeout) ->
-    async_request(get, Url, Headers, ?DEFAULT_BODY, Pid, Timeout).
-
--spec async_post(buoy_url()) ->
-    {ok, shackle:request_id()} | error().
-
-async_post(Url) ->
-    async_post(Url, ?DEFAULT_HEADERS).
-
--spec async_post(buoy_url(), headers()) ->
-    {ok, shackle:request_id()} | error().
-
-async_post(Url, Headers) ->
-    async_post(Url, Headers, ?DEFAULT_BODY).
-
--spec async_post(buoy_url(), headers(), body()) ->
-    {ok, shackle:request_id()} | error().
-
-async_post(Url, Headers, Body) ->
-    async_post(Url, Headers, Body, self()).
-
--spec async_post(buoy_url(), headers(), body(), pid()) ->
-    {ok, shackle:request_id()} | error().
-
-async_post(Url, Headers, Body, Pid) ->
-    async_post(Url, Headers, Body, Pid, ?DEFAULT_TIMEOUT).
-
--spec async_post(buoy_url(), headers(), body(), pid(), timeout()) ->
-    {ok, shackle:request_id()} | error().
-
-async_post(Url, Headers, Body, Pid, Timeout) ->
-    async_request(post, Url, Headers, Body, Pid, Timeout).
-
--spec async_request(method(), buoy_url(), headers(), body(),
-    pid(), timeout()) -> {ok, shackle:request_id()} | error().
 
 async_request(Method, #buoy_url {
         protocol = Protocol,
@@ -129,76 +52,43 @@ async_request(Method, #buoy_url {
         hostname = Hostname,
         port = Port,
         path = Path
-    }, Headers, Body, Pid, Timeout) ->
+    }, BuoyOpts) ->
 
-    PoolName = pool_name(Protocol, Hostname, Port),
-    cast(PoolName, {request, Method, Path, Headers, Host, Body}, Pid, Timeout).
+    case buoy_pool:lookup(Protocol, Hostname, Port) of
+        {ok, PoolName} ->
+            Headers = buoy_opts(headers, BuoyOpts),
+            Body = buoy_opts(body, BuoyOpts),
+            Request = {request, Method, Path, Headers, Host, Body},
+            Pid = buoy_opts(pid, BuoyOpts),
+            Timeout = buoy_opts(timeout, BuoyOpts),
+            shackle:cast(PoolName, Request, Pid, Timeout);
+        {error, _} = E ->
+            E
+    end.
 
--spec custom(binary(), buoy_url()) ->
+-spec custom(binary(), buoy_url(), buoy_opts()) ->
     {ok, buoy_resp()} | error().
 
-custom(Verb, Url) ->
-    custom(Verb, Url, ?DEFAULT_HEADERS).
+custom(Verb, Url, BuoyOpts) ->
+    request({custom, Verb}, Url, BuoyOpts).
 
--spec custom(binary(), buoy_url(), headers()) ->
+-spec get(buoy_url(), buoy_opts()) ->
     {ok, buoy_resp()} | error().
 
-custom(Verb, Url, Headers) ->
-    custom(Verb, Url, Headers, ?DEFAULT_BODY).
+get(Url, BuoyOpts) ->
+    request(get, Url, BuoyOpts).
 
--spec custom(binary(), buoy_url(), headers(), body()) ->
+-spec post(buoy_url(), buoy_opts()) ->
     {ok, buoy_resp()} | error().
 
-custom(Verb, Url, Headers, Body) ->
-    custom(Verb, Url, Headers, Body, ?DEFAULT_TIMEOUT).
+post(Url, BuoyOpts) ->
+    request(post, Url, BuoyOpts).
 
--spec custom(binary(), buoy_url(), headers(), body(), timeout()) ->
+-spec put(buoy_url(), buoy_opts()) ->
     {ok, buoy_resp()} | error().
 
-custom(Verb, Url, Headers, Body, Timeout) ->
-    request({custom, Verb}, Url, Headers, Body, Timeout).
-
--spec get(buoy_url()) ->
-    {ok, buoy_resp()} | error().
-
-get(Url) ->
-    get(Url, ?DEFAULT_HEADERS).
-
--spec get(buoy_url(), headers()) ->
-    {ok, buoy_resp()} | error().
-
-get(Url, Headers) ->
-    get(Url, Headers, ?DEFAULT_TIMEOUT).
-
--spec get(buoy_url(), headers(), timeout()) ->
-    {ok, buoy_resp()} | error().
-
-get(Url, Headers, Timeout) ->
-    request(get, Url, Headers, ?DEFAULT_BODY, Timeout).
-
--spec post(buoy_url()) ->
-    {ok, buoy_resp()} | error().
-
-post(Url) ->
-    post(Url, ?DEFAULT_HEADERS).
-
--spec post(buoy_url(), headers()) ->
-    {ok, buoy_resp()} | error().
-
-post(Url, Headers) ->
-    post(Url, Headers, ?DEFAULT_BODY).
-
--spec post(buoy_url(), headers(), body()) ->
-    {ok, buoy_resp()} | error().
-
-post(Url, Headers, Body) ->
-    post(Url, Headers, Body, ?DEFAULT_TIMEOUT).
-
--spec post(buoy_url(), headers(), body(), timeout()) ->
-    {ok, buoy_resp()} | error().
-
-post(Url, Headers, Body, Timeout) ->
-    request(post, Url, Headers, Body, Timeout).
+put(Url, BuoyOpts) ->
+    request(put, Url, BuoyOpts).
 
 -spec receive_response(request_id()) ->
     {ok, term()} | error().
@@ -206,7 +96,7 @@ post(Url, Headers, Body, Timeout) ->
 receive_response(RequestId) ->
     shackle:receive_response(RequestId).
 
--spec request(method(), buoy_url(), headers(), body(), timeout()) ->
+-spec request(method(), buoy_url(), buoy_opts()) ->
     {ok, buoy_resp()} | error().
 
 request(Method, #buoy_url {
@@ -215,21 +105,25 @@ request(Method, #buoy_url {
         hostname = Hostname,
         port = Port,
         path = Path
-    }, Headers, Body, Timeout) ->
+    }, BuoyOpts) ->
 
-    PoolName = pool_name(Protocol, Hostname, Port),
-    call(PoolName, {request, Method, Path, Headers, Host, Body}, Timeout).
+    case buoy_pool:lookup(Protocol, Hostname, Port) of
+        {ok, PoolName} ->
+            Headers = buoy_opts(headers, BuoyOpts),
+            Body = buoy_opts(body, BuoyOpts),
+            Request = {request, Method, Path, Headers, Host, Body},
+            Timeout = buoy_opts(timeout, BuoyOpts),
+            shackle:call(PoolName, Request, Timeout);
+        {error, _} = E ->
+            E
+    end.
 
 %% private
-cast({error, key_not_found}, _Request, _Pid, _Timeout) ->
-    {error, pool_not_started};
-cast({ok, PoolName}, Request, Pid, Timeout) ->
-    shackle:cast(PoolName, Request, Pid, Timeout).
-
-call({error, key_not_found}, _Request, _Timeout) ->
-    {error, pool_not_started};
-call({ok, PoolName}, Request, Timeout) ->
-    shackle:call(PoolName, Request, Timeout).
-
-pool_name(Protocol, Hostname, Port) ->
-    foil:lookup(buoy_pool, {Protocol, Hostname, Port}).
+buoy_opts(body, BuoyOpts) ->
+    maps:get(body, BuoyOpts, ?DEFAULT_BODY);
+buoy_opts(headers, BuoyOpts) ->
+    maps:get(headers, BuoyOpts, ?DEFAULT_HEADERS);
+buoy_opts(pid, BuoyOpts) ->
+    maps:get(pid, BuoyOpts, ?DEFAULT_PID);
+buoy_opts(timeout, BuoyOpts) ->
+    maps:get(timeout, BuoyOpts, ?DEFAULT_TIMEOUT).

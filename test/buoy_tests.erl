@@ -28,37 +28,44 @@ buoy_test_() ->
         fun custom_subtest/0,
         fun get_subtest/0,
         fun pool_subtest/0,
-        fun post_subtest/0
+        fun post_subtest/0,
+        fun put_subtest/0
     ]}.
 
 %% tests
 custom_subtest() ->
-    {ok, ReqId} = buoy:async_custom(?VERB, ?URL(?URL_5)),
+    {ok, ReqId} = buoy:async_custom(?VERB, ?URL(?URL_5), #{}),
     {ok, ?RESP_1} = buoy:receive_response(ReqId),
-    {ok, ?RESP_1} = buoy:custom(<<"GET">>, ?URL(?URL_1)),
-    {ok, ?RESP_3} = buoy:custom(<<"POST">>, ?URL(?URL_3)),
-    {ok, ?RESP_1} = buoy:custom(?VERB, ?URL(?URL_5)).
+    {ok, ?RESP_1} = buoy:custom(<<"GET">>, ?URL(?URL_1), #{}),
+    {ok, ?RESP_3} = buoy:custom(<<"POST">>, ?URL(?URL_3), #{}),
+    {ok, ?RESP_1} = buoy:custom(?VERB, ?URL(?URL_5), #{}).
 
 get_subtest() ->
-    {ok, ReqId} = buoy:async_get(?URL(?URL_1)),
+    {ok, ReqId} = buoy:async_get(?URL(?URL_1), #{}),
     {ok, ?RESP_1} = buoy:receive_response(ReqId),
-    {ok, ?RESP_1} = buoy:get(?URL(?URL_1)),
-    {ok, ?RESP_2} = buoy:get(?URL(?URL_2)),
-    {ok, ?RESP_4} = buoy:get(?URL(?URL_4)).
+    {ok, ?RESP_1} = buoy:get(?URL(?URL_1), #{}),
+    {ok, ?RESP_2} = buoy:get(?URL(?URL_2), #{}),
+    {ok, ?RESP_4} = buoy:get(?URL(?URL_4), #{}).
 
 pool_subtest() ->
     {error, pool_already_started} = buoy_pool:start(?URL(?URL_1)),
     ok = buoy_pool:stop(?URL(?URL_1)),
     {error, pool_not_started} = buoy_pool:stop(?URL(?URL_1)),
-    {error, pool_not_started} = buoy:get(?URL(?URL_1)),
-    {error, pool_not_started} = buoy:async_get(?URL(?URL_1)),
+    {error, pool_not_started} = buoy:get(?URL(?URL_1), #{}),
+    {error, pool_not_started} = buoy:async_get(?URL(?URL_1), #{}),
     ok = buoy_pool:start(?URL(?URL_1)).
 
 post_subtest() ->
-    {ok, ReqId} = buoy:async_post(?URL(?URL_3)),
+    {ok, ReqId} = buoy:async_post(?URL(?URL_3), #{}),
     {ok, ?RESP_3} = buoy:receive_response(ReqId),
-    {ok, ?RESP_3} = buoy:post(?URL(?URL_3)),
-    {ok, ?RESP_1} = buoy:post(?URL(?URL_3), [], <<"Hello world!">>).
+    {ok, ?RESP_3} = buoy:post(?URL(?URL_3), #{}),
+    {ok, ?RESP_1} = buoy:post(?URL(?URL_3), #{body => <<"Hello world!">>}).
+
+put_subtest() ->
+    {ok, ReqId} = buoy:async_put(?URL(?URL_3), #{}),
+    {ok, ?RESP_3} = buoy:receive_response(ReqId),
+    {ok, ?RESP_3} = buoy:put(?URL(?URL_3), #{}),
+    {ok, ?RESP_1} = buoy:put(?URL(?URL_3), #{body => <<"Hello world!">>}).
 
 %% utils
 cleanup() ->

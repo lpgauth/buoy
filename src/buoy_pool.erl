@@ -3,6 +3,7 @@
 
 -export([
     init/0,
+    lookup/3,
     start/1,
     start/2,
     stop/1
@@ -19,6 +20,17 @@ init() ->
     ]),
     foil:new(?MODULE),
     foil:load(?MODULE).
+
+-spec lookup(protocol_http(), hostname(), inet:port_number()) ->
+    {ok, atom()} | {error, pool_not_started}.
+
+lookup(Protocol, Hostname, Port) ->
+    case foil:lookup(buoy_pool, {Protocol, Hostname, Port}) of
+        {ok, _} = R ->
+            R;
+        {error, _} ->
+            {error, pool_not_started}
+    end.
 
 -spec start(buoy_url()) ->
     ok | {error, pool_already_started | shackle_not_started}.

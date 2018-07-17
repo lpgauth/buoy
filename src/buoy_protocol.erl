@@ -153,12 +153,16 @@ content_length([<<"transfer-encoding: chunked">> | _T]) ->
 content_length([_ | T]) ->
     content_length(T).
 
-format_method({custom, Verb}) ->
-    Verb;
 format_method(get) ->
     <<"GET">>;
+format_method(head) ->
+    <<"HEAD">>;
 format_method(post) ->
-    <<"POST">>.
+    <<"POST">>;
+format_method(put) ->
+    <<"PUT">>;
+format_method({custom, Verb}) ->
+    Verb.
 
 format_headers(Headers) ->
     [format_header(Header) || Header <- Headers].
