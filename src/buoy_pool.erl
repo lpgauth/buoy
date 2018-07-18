@@ -6,7 +6,8 @@
     lookup/3,
     start/1,
     start/2,
-    stop/1
+    stop/1,
+    terminate/0
 ]).
 
 %% public
@@ -14,32 +15,30 @@
     ok.
 
 init() ->
-    ets:new(?ETS_TABLE_POOL, [
-        named_table,
-        public
-    ]),
     foil:new(?MODULE),
     foil:load(?MODULE).
 
 -spec lookup(protocol_http(), hostname(), inet:port_number()) ->
-    {ok, atom()} | {error, pool_not_started}.
+    {ok, atom()} | {error, pool_not_started | buoy_not_started}.
 
 lookup(Protocol, Hostname, Port) ->
     case foil:lookup(buoy_pool, {Protocol, Hostname, Port}) of
         {ok, _} = R ->
             R;
+        {error, key_not_found} ->
+            {error, pool_not_started};
         {error, _} ->
-            {error, pool_not_started}
+            {error, buoy_not_started}
     end.
 
 -spec start(buoy_url()) ->
-    ok | {error, pool_already_started | shackle_not_started}.
+    ok | {error, pool_already_started | buoy_not_started}.
 
 start(Url) ->
     start(Url, ?DEFAULT_POOL_OPTIONS).
 
 -spec start(buoy_url(), options()) ->
-    ok | {error, pool_already_started | shackle_not_started}.
+    ok | {error, pool_already_started | buoy_not_started}.
 
 start(#buoy_url {
         protocol = Protocol,
@@ -54,15 +53,16 @@ start(#buoy_url {
     case shackle_pool:start(Name, ?CLIENT, ClientOptions, PoolOptions) of
         ok ->
             Key = {Protocol, Hostname, Port},
-            ets:insert(?ETS_TABLE_POOL, {Key, Name}),
             ok = foil:insert(?MODULE, Key, Name),
             ok = foil:load(?MODULE);
-        {error, Reason} ->
-            {error, Reason}
+        {error, pool_already_started} = E ->
+            E;
+        {error, shackle_not_started} ->
+            {error, buoy_not_started}
     end.
 
 -spec stop(buoy_url()) ->
-    ok | {error, shackle_not_started | pool_not_started}.
+    ok | {error,  pool_not_started | buoy_not_started}.
 
 stop(#buoy_url {
         protocol = Protocol,
@@ -71,14 +71,22 @@ stop(#buoy_url {
     }) ->
 
     Key = {Protocol, Hostname, Port},
-    case ets:take(?ETS_TABLE_POOL, Key) of
-        [] ->
-            {error, pool_not_started};
-        [{_, Name}] ->
+    case foil:lookup(?MODULE, Key) of
+        {ok, Name} ->
+            shackle_pool:stop(Name),
             foil:delete(?MODULE, Key),
-            foil:load(?MODULE),
-            shackle_pool:stop(Name)
+            foil:load(?MODULE);
+        {error, key_not_found} ->
+            {error, pool_not_started};
+        {error, _} ->
+            {error, buoy_not_started}
     end.
+
+-spec terminate() ->
+    ok.
+
+terminate() ->
+    foil:delete(?MODULE).
 
 %% private
 client_options(Protocol, Hostname, Port, Options) ->
