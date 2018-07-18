@@ -23,6 +23,3 @@
 -define(DEFAULT_RECONNECT_MAX, 120000).
 -define(DEFAULT_RECONNECT_MIN, 500).
 -define(DEFAULT_TIMEOUT, 1000).
-
-%% ETS tables
--define(ETS_TABLE_POOL, buoy_pool).
