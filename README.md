@@ -102,6 +102,16 @@ ok
     <td>500</td>
     <td>reconnect minimum time</td>
   </tr>
+  <tr>
+    <td>socket_options</td>
+    <td>[gen_tcp:connect_option() | ssl:tls_client_option()]</td>
+    <td>[binary,
+    {packet, line},
+    {packet, raw},
+    {send_timeout, 50},
+    {send_timeout_close, true}]</td>
+    <td>options passed to the socket when connecting</td>
+  </tr>
 </table>
 
 ## Tests
