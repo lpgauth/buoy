@@ -95,6 +95,8 @@ client_options(Protocol, Hostname, Port, Options) ->
         ?DEFAULT_RECONNECT_MAX),
     ReconnectTimeMin = ?LOOKUP(reconnect_time_min, Options,
         ?DEFAULT_RECONNECT_MIN),
+    SocketOptions = ?LOOKUP(socket_options, Options,
+        ?DEFAULT_SOCKET_OPTIONS),
 
     [{ip, binary_to_list(Hostname)},
      {port, Port},
@@ -102,13 +104,7 @@ client_options(Protocol, Hostname, Port, Options) ->
      {reconnect, Reconnect},
      {reconnect_time_max, ReconnectTimeMax},
      {reconnect_time_min, ReconnectTimeMin},
-     {socket_options, [
-         binary,
-         {packet, line},
-         {packet, raw},
-         {send_timeout, 50},
-         {send_timeout_close, true}
-     ]}].
+     {socket_options, SocketOptions}].
 
 name(Protocol, Hostname, Port) ->
     list_to_atom(atom_to_list(Protocol) ++ "_"
