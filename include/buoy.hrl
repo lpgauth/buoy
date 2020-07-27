@@ -34,7 +34,8 @@
                          {pool_strategy, random | round_robin} |
                          {reconnect, boolean()} |
                          {reconnect_time_max, pos_integer() | infinity} |
-                         {reconnect_time_min, pos_integer()}.
+                         {reconnect_time_min, pos_integer()} |
+                         {socket_options, [gen_tcp:connect_option() | ssl:tls_client_option()]}.
 -type options()       :: [option()].
 -type path()          :: binary().
 -type protocol_http() :: http | https.

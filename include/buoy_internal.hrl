@@ -22,4 +22,10 @@
 -define(DEFAULT_RECONNECT, true).
 -define(DEFAULT_RECONNECT_MAX, 120000).
 -define(DEFAULT_RECONNECT_MIN, 500).
+-define(DEFAULT_SOCKET_OPTIONS, [
+    binary,
+    {packet, line},
+    {packet, raw},
+    {send_timeout, 50},
+    {send_timeout_close, true}]).
 -define(DEFAULT_TIMEOUT, 1000).
