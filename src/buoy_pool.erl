@@ -12,7 +12,7 @@
 
 %% public
 -spec init() ->
-    ok.
+    ok | error().
 
 init() ->
     foil:new(?MODULE),
@@ -38,7 +38,7 @@ start(Url) ->
     start(Url, ?DEFAULT_POOL_OPTIONS).
 
 -spec start(buoy_url(), options()) ->
-    ok | {error, pool_already_started | buoy_not_started}.
+    ok | {error, pool_already_started | buoy_not_started} | error().
 
 start(#buoy_url {
         protocol = Protocol,
@@ -62,7 +62,7 @@ start(#buoy_url {
     end.
 
 -spec stop(buoy_url()) ->
-    ok | {error,  pool_not_started | buoy_not_started}.
+    ok | {error,  pool_not_started | buoy_not_started} | error().
 
 stop(#buoy_url {
         protocol = Protocol,
@@ -83,7 +83,7 @@ stop(#buoy_url {
     end.
 
 -spec terminate() ->
-    ok.
+    ok | error().
 
 terminate() ->
     foil:delete(?MODULE).

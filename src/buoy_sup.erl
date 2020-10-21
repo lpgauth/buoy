@@ -11,8 +11,8 @@
 ]).
 
 %% public
--spec start_link() ->
-    {ok, pid()}.
+% Wrong but can't be corrected until OTP exports startlink_ret() (OTP 23)
+% -spec start_link() -> {ok, pid()}.
 
 start_link() ->
     supervisor:start_link({local, ?MODULE}, ?MODULE, []).

@@ -14,7 +14,7 @@
 
 %% public
 -spec start() ->
-    {ok, [atom()]}.
+    {ok, [atom()]} | {error, term()}.
 
 start() ->
     application:ensure_all_started(?APP).
