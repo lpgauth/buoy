@@ -21,7 +21,7 @@ This HTTP client has been designed for HTTP 1.1 with keep-alive. For performance
 
 ```erlang
 1> buoy_app:start().
-{ok,[granderl,shackle,buoy]}
+{ok,[shackle,buoy]}
 
 2> Url = buoy_utils:parse_url(<<"http://example.com">>).
 {buoy_url,<<"example.com">>,<<"example.com">>,<<"/">>,80,
