@@ -2,8 +2,7 @@
 
 High-Performance Erlang HTTP 1.1 Client
 
-[![Build Status](https://travis-ci.org/lpgauth/buoy.svg?branch=dev)](https://travis-ci.org/lpgauth/buoy.svg?branch=dev)
-[![Coverage Status](https://coveralls.io/repos/github/lpgauth/buoy/badge.svg?branch=dev)](https://coveralls.io/github/lpgauth/buoy?branch=dev)
+![Build Status](https://github.com/lpgauth/buoy/workflows/Erlang%20CI/badge.svg)
 
 ## Disclaimer:
 This HTTP client has been designed for HTTP 1.1 with keep-alive. For performance reasons, it only implements a subset of RFC2616.
@@ -126,7 +125,7 @@ make xref
 ```license
 The MIT License (MIT)
 
-Copyright (c) 2016-2017 Louis-Philippe Gauthier
+Copyright (c) 2016-2023 Louis-Philippe Gauthier
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
