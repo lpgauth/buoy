@@ -1,6 +1,8 @@
 CACHEGRIND=qcachegrind
-ELVIS=./bin/elvis
+REBAR3=$(shell which rebar3)
+ifeq ($(REBAR3),)
 REBAR3=./bin/rebar3
+endif
 
 all: compile
 
@@ -23,10 +25,6 @@ dialyzer:
 edoc:
 	@echo "Running rebar3 edoc..."
 	@$(REBAR3) as edoc edoc
-
-elvis:
-	@echo "Running elvis rock..."
-	@$(ELVIS) rock
 
 eunit:
 	@echo "Running rebar3 eunit..."
@@ -52,4 +50,4 @@ xref:
 	@echo "Running rebar3 xref..."
 	@$(REBAR3) xref
 
-.PHONY: clean compile coveralls dialyzer edoc elvis eunit profile xref
+.PHONY: clean compile coveralls dialyzer edoc eunit profile xref

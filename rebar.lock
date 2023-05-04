@@ -1,16 +1,20 @@
-{"1.1.0",
+{"1.2.0",
 [{<<"foil">>,
   {git,"https://github.com/lpgauth/foil.git",
        {ref,"b55c30ff8b21daf89a85d1565d4b836c7f9e549b"}},
   0},
- {<<"granderl">>,{pkg,<<"granderl">>,<<"0.1.5">>},1},
+ {<<"granderl">>,
+  {git,"https://github.com/tokenrove/granderl.git",
+       {ref,"baafd1bc825cb1fc022760eae913f774fa6af91b"}},
+  1},
  {<<"metal">>,{pkg,<<"metal">>,<<"0.1.1">>},1},
  {<<"shackle">>,
   {git,"https://github.com/lpgauth/shackle.git",
-       {ref,"1cf730d86b918df5d390dcfce7f33f49de8e2084"}},
+       {ref,"3bd5df0f06e415fe0c3122b9f5387d2959b944ec"}},
   0}]}.
 [
 {pkg_hash,[
- {<<"granderl">>, <<"F20077A68BD80B8D8783BD15A052813C6483771DEC1A5B837D307CBE92F14122">>},
- {<<"metal">>, <<"5D3D1322DA7BCD34B94FED5486F577973685298883954F7A3E517EF5EF6953F5">>}]}
+ {<<"metal">>, <<"5D3D1322DA7BCD34B94FED5486F577973685298883954F7A3E517EF5EF6953F5">>}]},
+{pkg_hash_ext,[
+ {<<"metal">>, <<"88B82B634998A1A768DEDCD372C2F7E657B19445325C0AF5CCBAC62C77210F1D">>}]}
 ].
