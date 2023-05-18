@@ -28,7 +28,7 @@
 -type headers()       :: [{iodata(), iodata()}].
 -type host()          :: binary().
 -type hostname()      :: binary().
--type method()        :: get | post | put | {custom, binary()}.
+-type method()        :: get | post | put | head | {custom, binary()}.
 -type option()        :: {backlog_size, pos_integer()} |
                          {pool_size, pos_integer()} |
                          {pool_strategy, random | round_robin} |
