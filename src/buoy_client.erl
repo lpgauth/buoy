@@ -16,8 +16,8 @@
 -record(state, {
     bin_patterns        :: tuple(),
     buffer       = <<>> :: binary(),
-    requests_in  = 0    :: non_neg_integer(),
-    requests_out = 0    :: non_neg_integer(),
+    queue               :: queue:queue(),
+    request_id   = 0    :: non_neg_integer(),
     response            :: undefined | buoy_resp()
 }).
 
@@ -29,7 +29,8 @@
 
 init(_Opts) ->
     {ok, #state {
-        bin_patterns = buoy_protocol:bin_patterns()
+        bin_patterns = buoy_protocol:bin_patterns(),
+        queue = queue:new()
     }}.
 
 -spec setup(inet:socket(), state()) ->
@@ -42,13 +43,15 @@ setup(_Socket, State) ->
     {ok, non_neg_integer(), iodata(), state()}.
 
 handle_request({request, Method, Path, Headers, Host, Body}, #state {
-        requests_out = RequestsOut
+        queue = Queue,
+        request_id = RequestId
     } = State) ->
 
     Request = buoy_protocol:request(Method, Path, Headers, Host, Body),
 
-    {ok, RequestsOut, Request, State#state {
-        requests_out = RequestsOut + 1
+    {ok, RequestId, Request, State#state {
+        queue = queue:in({RequestId, Method}, Queue),
+        request_id = RequestId + 1
     }}.
 
 -spec handle_data(binary(), state()) ->
@@ -58,16 +61,16 @@ handle_request({request, Method, Path, Headers, Host, Body}, #state {
 handle_data(Data, #state {
         bin_patterns = BinPatterns,
         buffer = Buffer,
-        requests_in = RequestsIn,
+        queue = Queue,
         response = Response
     } = State) ->
 
     Data2 = <<Buffer/binary, Data/binary>>,
-    case responses(Data2, RequestsIn, Response, BinPatterns, []) of
-        {ok, RequestsIn2, Response2, Responses, Rest} ->
+    case responses(Data2, Queue, Response, BinPatterns, []) of
+        {ok, Queue2, Response2, Responses, Rest} ->
             {ok, Responses, State#state {
                 buffer = Rest,
-                requests_in = RequestsIn2,
+                queue = Queue2,
                 response = Response2
             }};
         {error, Reason} ->
@@ -81,17 +84,19 @@ terminate(_State) ->
     ok.
 
 %% private
-responses(<<>>, RequestsIn, Response, _BinPatterns, Responses) ->
-    {ok, RequestsIn, Response, Responses, <<>>};
-responses(Data, RequestsIn, Response, BinPatterns, Responses) ->
-    case buoy_protocol:response(Data, Response, BinPatterns) of
+responses(<<>>, Queue, Response, _BinPatterns, Responses) ->
+    {ok, Queue, Response, Responses, <<>>};
+responses(Data, Queue, Response, BinPatterns, Responses) ->
+    {value, {_, Method}} = queue:peek(Queue),
+    case buoy_protocol:response(Data, Method, Response, BinPatterns) of
         {ok, #buoy_resp {state = done} = Response2, Rest} ->
-            Responses2 = [{RequestsIn, {ok, Response2}} | Responses],
-            responses(Rest, RequestsIn + 1, undefined, BinPatterns, Responses2);
+            {{value, {RequestId, _}}, Queue2} = queue:out(Queue),
+            Responses2 = [{RequestId, {ok, Response2}} | Responses],
+            responses(Rest, Queue2, undefined, BinPatterns, Responses2);
         {ok, #buoy_resp {} = Response2, Rest} ->
-            {ok, RequestsIn, Response2, Responses, Rest};
+            {ok, Queue, Response2, Responses, Rest};
         {error, not_enough_data} ->
-            {ok, RequestsIn, Response, Responses, Data};
+            {ok, Queue, Response, Responses, Data};
         {error, _Reason} = E ->
             E
     end.

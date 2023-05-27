@@ -7,7 +7,6 @@
 -define(GET_ENV(Key, Default), application:get_env(?APP, Key, Default)).
 -define(LOOKUP(Key, List), ?LOOKUP(Key, List, undefined)).
 -define(LOOKUP(Key, List, Default), shackle_utils:lookup(Key, List, Default)).
--define(MAX_32_BIT_INT, 4294967296).
 
 %% defaults
 -define(DEFAULT_BACKLOG_SIZE, 1024).
