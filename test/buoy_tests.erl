@@ -29,7 +29,8 @@ buoy_test_() ->
         fun get_subtest/0,
         fun pool_subtest/0,
         fun post_subtest/0,
-        fun put_subtest/0
+        fun put_subtest/0,
+        fun head_subtest/0
     ]}.
 
 %% tests
@@ -67,6 +68,13 @@ put_subtest() ->
     {ok, ?RESP_3} = buoy:put(?URL(?URL_3), #{}),
     {ok, ?RESP_1} = buoy:put(?URL(?URL_3), #{body => <<"Hello world!">>}).
 
+head_subtest() ->
+    {ok, ReqId} = buoy:async_head(?URL(?URL_1), #{}),
+    {ok, ?RESP_1} = buoy:receive_response(ReqId),
+    {ok, ?RESP_1} = buoy:head(?URL(?URL_1), #{}),
+    {ok, ?RESP_2} = buoy:head(?URL(?URL_2), #{}),
+    {ok, ?RESP_4} = buoy:head(?URL(?URL_4), #{}).
+
 %% utils
 cleanup() ->
     buoy_pool:stop(?URL(?URL_1)),
@@ -76,6 +84,7 @@ cleanup() ->
 setup() ->
     error_logger:tty(false),
     {ok, _} = buoy_http_server:start(),
-    timer:sleep(100),
+    timer:sleep(200),
     buoy_app:start(),
-    buoy_pool:start(?URL(?URL_1)).
+    buoy_pool:start(?URL(?URL_1)),
+    timer:sleep(200).

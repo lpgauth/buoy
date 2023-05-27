@@ -9,7 +9,7 @@
     headers/1,
     request/5,
     response/1,
-    response/3
+    response/4
 ]).
 
 -record(bin_patterns, {
@@ -61,12 +61,12 @@ request(Method, Path, Headers, Host, Body) ->
     {ok, buoy_resp(), binary()} | error().
 
 response(Data) ->
-    response(Data, undefined, bin_patterns()).
+    response(Data, get, undefined, bin_patterns()).
 
--spec response(binary(), undefined | buoy_resp(), bin_patterns()) ->
+-spec response(binary(), method(), undefined | buoy_resp(), bin_patterns()) ->
     {ok, buoy_resp(), binary()} | error().
 
-response(Data, undefined, BinPatterns) ->
+response(Data, Method, undefined, BinPatterns) ->
     case parse_status_line(Data, BinPatterns) of
         {StatusCode, Reason, Rest} ->
             case split_headers(Rest, BinPatterns) of
@@ -87,7 +87,7 @@ response(Data, undefined, BinPatterns) ->
                         content_length = 0
                     }, Rest2};
                 {ContentLength, Headers, Rest2} ->
-                    response(Rest2, #buoy_resp {
+                    response(Rest2, Method, #buoy_resp {
                         state = body,
                         status_code = StatusCode,
                         reason = Reason,
@@ -100,7 +100,14 @@ response(Data, undefined, BinPatterns) ->
         {error, Reason} ->
             {error, Reason}
     end;
-response(Data, #buoy_resp {
+response(Data, head, #buoy_resp {
+        state = body
+    } = Response, _BinPatterns) ->
+
+    {ok, Response#buoy_resp {
+        state = done
+    }, Data};
+response(Data, _Method, #buoy_resp {
         state = body,
         content_length = chunked
     } = Response, BinPatterns) ->
@@ -114,7 +121,7 @@ response(Data, #buoy_resp {
         {error, Reason} ->
             {error, Reason}
     end;
-response(Data, #buoy_resp {
+response(Data, _Method, #buoy_resp {
         state = body,
         content_length = ContentLength
     } = Response, _BinPatterns) when size(Data) >= ContentLength ->
@@ -125,7 +132,7 @@ response(Data, #buoy_resp {
         state = done,
         body = Body
     }, Rest};
-response(Data, #buoy_resp {
+response(Data, _Method, #buoy_resp {
         state = body
     } = Response, _BinPatterns) ->
 
