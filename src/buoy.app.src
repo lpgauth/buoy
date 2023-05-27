@@ -1,5 +1,5 @@
 {application, buoy, [
-  {applications, [kernel, stdlib, foil, shackle]},
+  {applications, [kernel, stdlib, foil, shackle, ssl]},
   {description, "High Performance Erlang HTTP 1.1 Client"},
   {env, []},
   {licenses, ["MIT"]},
