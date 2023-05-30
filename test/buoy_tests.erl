@@ -2,7 +2,8 @@
 -include_lib("buoy/include/buoy.hrl").
 -include_lib("eunit/include/eunit.hrl").
 
--define(BASE_URL, <<"http://127.0.0.1:8080">>).
+-define(BASE_HTTP, <<"http://127.0.0.1:8080">>).
+-define(BASE_HTTPS, <<"http://127.0.0.1:8081">>).
 
 -define(RESP_1, #buoy_resp {status_code = 200, content_length = 12}).
 -define(RESP_2, #buoy_resp {status_code = 200, content_length = 12000}).
@@ -11,11 +12,12 @@
 
 -define(VERB, <<"DEFROBNICATE">>). % because 12 characters
 
--define(URL_1, <<?BASE_URL/binary, "/1">>).
--define(URL_2, <<?BASE_URL/binary, "/2">>).
--define(URL_3, <<?BASE_URL/binary, "/3">>).
--define(URL_4, <<?BASE_URL/binary, "/4">>).
--define(URL_5, <<?BASE_URL/binary, "/5">>).
+-define(URL_1, <<?BASE_HTTP/binary, "/1">>).
+-define(URL_2, <<?BASE_HTTP/binary, "/2">>).
+-define(URL_3, <<?BASE_HTTP/binary, "/3">>).
+-define(URL_4, <<?BASE_HTTP/binary, "/4">>).
+-define(URL_5, <<?BASE_HTTP/binary, "/5">>).
+-define(URL_6, <<?BASE_HTTPS/binary, "/1">>).
 
 -define(URL(Url), buoy_utils:parse_url(Url)).
 
@@ -39,14 +41,17 @@ custom_subtest() ->
     {ok, ?RESP_1} = buoy:receive_response(ReqId),
     {ok, ?RESP_1} = buoy:custom(<<"GET">>, ?URL(?URL_1), #{}),
     {ok, ?RESP_3} = buoy:custom(<<"POST">>, ?URL(?URL_3), #{}),
-    {ok, ?RESP_1} = buoy:custom(?VERB, ?URL(?URL_5), #{}).
+    {ok, ?RESP_1} = buoy:custom(?VERB, ?URL(?URL_5), #{}),
+    {ok, ?RESP_1} = buoy:custom(?VERB, ?URL(?URL_6), #{}).
+    
 
 get_subtest() ->
     {ok, ReqId} = buoy:async_get(?URL(?URL_1), #{}),
     {ok, ?RESP_1} = buoy:receive_response(ReqId),
     {ok, ?RESP_1} = buoy:get(?URL(?URL_1), #{}),
     {ok, ?RESP_2} = buoy:get(?URL(?URL_2), #{}),
-    {ok, ?RESP_4} = buoy:get(?URL(?URL_4), #{}).
+    {ok, ?RESP_4} = buoy:get(?URL(?URL_4), #{}),
+    {ok, ?RESP_1} = buoy:get(?URL(?URL_6), #{}).
 
 pool_subtest() ->
     {error, pool_already_started} = buoy_pool:start(?URL(?URL_1)),
@@ -73,18 +78,23 @@ head_subtest() ->
     {ok, ?RESP_1} = buoy:receive_response(ReqId),
     {ok, ?RESP_1} = buoy:head(?URL(?URL_1), #{}),
     {ok, ?RESP_2} = buoy:head(?URL(?URL_2), #{}),
-    {ok, ?RESP_4} = buoy:head(?URL(?URL_4), #{}).
+    {ok, ?RESP_4} = buoy:head(?URL(?URL_4), #{}),
+    {ok, ?RESP_1} = buoy:head(?URL(?URL_6), #{}).
 
 %% utils
 cleanup() ->
     buoy_pool:stop(?URL(?URL_1)),
+    buoy_pool:stop(?URL(?URL_6)),
     buoy_app:stop(),
-    buoy_http_server:stop().
+    buoy_http_server:stop_http(),
+    buoy_http_server:stop_https().
 
 setup() ->
-    error_logger:tty(false),
-    {ok, _} = buoy_http_server:start(),
+    % error_logger:tty(false),
+    {ok, _} = buoy_http_server:start_http(),
+    {ok, _} = buoy_http_server:start_https(),
     timer:sleep(200),
     buoy_app:start(),
     buoy_pool:start(?URL(?URL_1)),
+    buoy_pool:start(?URL(?URL_6)),
     timer:sleep(200).

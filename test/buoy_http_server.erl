@@ -1,8 +1,10 @@
 -module(buoy_http_server).
 
 -export([
-    start/0,
-    stop/0
+    start_http/0,
+    start_https/0,
+    stop_http/0,
+    stop_https/0
 ]).
 
 -export([
@@ -10,19 +12,39 @@
 ]).
 
 %% public
-start() ->
+start_http() ->
     application:ensure_all_started(cowboy),
     Dispatch = cowboy_router:compile([{'_', [
         {"/:test", ?MODULE, []}]}]),
-    {ok, _} = cowboy:start_clear(?MODULE, [{port, 8080}], #{
+    {ok, _} = cowboy:start_clear(buoy_http, [{port, 8080}], #{
         env => #{dispatch => Dispatch},
         max_keepalive => infinity,
         request_timeout => infinity
     }).
 
-stop() ->
-    cowboy:stop_listener(?MODULE).
+start_https() ->
+    application:ensure_all_started(cowboy),
+    LibDir = code:lib_dir(buoy),
+    io:format("~p~n", [LibDir ++ "/test/data/TestCA.crt"]),
+    Dispatch = cowboy_router:compile([{'_', [
+        {"/:test", ?MODULE, []}]}]),
+    {ok, _} = cowboy:start_tls(buoy_https, [
+        {port, 8081},
+        {cacertfile, LibDir ++ "/test/data/TestCA.crt"},
+        {certfile, LibDir ++ "/test/data/localhost.crt"},
+        {keyfile, LibDir ++ "/test/data/localhost.key"}
+    ], #{
+        env => #{dispatch => Dispatch},
+        max_keepalive => infinity,
+        request_timeout => infinity
+    }).
+    
+stop_http() ->
+    cowboy:stop_listener(buoy_http).
 
+stop_https() ->
+    cowboy:stop_listener(buoy_https).
+    
 %% cowboy callbacks
 init(Req, State) ->
     case cowboy_req:binding(test, Req) of
