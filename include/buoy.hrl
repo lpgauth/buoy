@@ -9,7 +9,7 @@
 }).
 
 -record(buoy_url, {
-    host     :: host(),
+    host     :: buoy:host(),
     hostname :: buoy:hostname(),
     path     :: path(),
     port     :: inet:port_number(),
@@ -20,7 +20,6 @@
 -type buoy_resp()     :: #buoy_resp {}.
 -type buoy_url()      :: #buoy_url {}.
 -type error()         :: {error, term()}.
--type host()          :: binary().
 -type method()        :: get | head | post | put | {custom, binary()}.
 -type path()          :: binary().
 -type protocol_http() :: http | https.
