@@ -29,13 +29,15 @@
                   body    => body(),
                   pid     => pid(),
                   timeout => non_neg_integer()}.
+-type path() :: binary().
 
 -export_type([
     body/0,
     headers/0,
     host/0,
     hostname/0,
-    opts/0
+    opts/0,
+    path/0
 ]).
 
 %% public
