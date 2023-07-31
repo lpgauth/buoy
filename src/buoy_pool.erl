@@ -19,9 +19,11 @@
                   {reconnect_time_min, pos_integer()} |
                   {socket_options, [gen_tcp:connect_option() | ssl:tls_client_option()]}.
 -type options() :: [option()].
+-type protocol() :: http | https.
 
 -export_type([
-    options/0
+    options/0,
+    protocol/0
 ]).
 
 %% public
@@ -32,7 +34,7 @@ init() ->
     foil:new(?MODULE),
     foil:load(?MODULE).
 
--spec lookup(protocol_http(), buoy:hostname(), inet:port_number()) ->
+-spec lookup(protocol(), buoy:hostname(), inet:port_number()) ->
     {ok, atom()} | {error, pool_not_started | buoy_not_started}.
 
 lookup(Protocol, Hostname, Port) ->

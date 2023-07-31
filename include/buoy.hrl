@@ -13,14 +13,13 @@
     hostname :: buoy:hostname(),
     path     :: buoy:path(),
     port     :: inet:port_number(),
-    protocol :: protocol_http()
+    protocol :: buoy_pool:protocol()
 }).
 
 %% types
 -type buoy_resp()     :: #buoy_resp {}.
 -type buoy_url()      :: #buoy_url {}.
 -type error()         :: {error, term()}.
--type protocol_http() :: http | https.
 
 -export_type([
     buoy_resp/0,
