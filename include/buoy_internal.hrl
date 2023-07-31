@@ -1,5 +1,4 @@
 -include("buoy.hrl").
--include_lib("shackle/include/shackle.hrl").
 
 %% macros
 -define(APP, buoy).
