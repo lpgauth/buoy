@@ -15,10 +15,3 @@
     port     :: inet:port_number(),
     protocol :: buoy_pool:protocol()
 }).
-
-%% types
--type buoy_resp()     :: #buoy_resp {}.
-
--export_type([
-    buoy_resp/0
-]).

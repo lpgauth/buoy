@@ -32,6 +32,7 @@
                   pid     => pid(),
                   timeout => non_neg_integer()}.
 -type path() :: binary().
+-type resp() :: #buoy_resp {}.
 -type url() :: #buoy_url {}.
 
 -export_type([
@@ -43,6 +44,7 @@
     method/0,
     opts/0,
     path/0,
+    resp/0,
     url/0
 ]).
 
@@ -101,31 +103,31 @@ async_request(Method, #buoy_url {
     end.
 
 -spec custom(binary(), url(), opts()) ->
-    {ok, buoy_resp()} | error().
+    {ok, resp()} | error().
 
 custom(Verb, Url, BuoyOpts) ->
     request({custom, Verb}, Url, BuoyOpts).
 
 -spec get(url(), opts()) ->
-    {ok, buoy_resp()} | error().
+    {ok, resp()} | error().
 
 get(Url, BuoyOpts) ->
     request(get, Url, BuoyOpts).
 
 -spec head(url(), opts()) ->
-    {ok, buoy_resp()} | error().
+    {ok, resp()} | error().
 
 head(Url, BuoyOpts) ->
     request(head, Url, BuoyOpts).
 
 -spec post(url(), opts()) ->
-    {ok, buoy_resp()} | error().
+    {ok, resp()} | error().
 
 post(Url, BuoyOpts) ->
     request(post, Url, BuoyOpts).
 
 -spec put(url(), opts()) ->
-    {ok, buoy_resp()} | error().
+    {ok, resp()} | error().
 
 put(Url, BuoyOpts) ->
     request(put, Url, BuoyOpts).
@@ -137,7 +139,7 @@ receive_response(RequestId) ->
     shackle:receive_response(RequestId).
 
 -spec request(method(), url(), opts()) ->
-    {ok, buoy_resp()} | error().
+    {ok, resp()} | error().
 
 request(Method, #buoy_url {
         protocol = Protocol,

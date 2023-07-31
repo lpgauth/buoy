@@ -18,7 +18,7 @@
     buffer       = <<>> :: binary(),
     queue               :: queue:queue(),
     request_id   = 0    :: non_neg_integer(),
-    response            :: undefined | buoy_resp()
+    response            :: undefined | buoy:resp()
 }).
 
 -type state() :: #state {}.
