@@ -17,7 +17,6 @@
 }).
 
 %% types
--type body()          :: undefined | iodata().
 -type buoy_opts()     :: #{headers => headers(),
                            body    => body(),
                            pid     => pid(),

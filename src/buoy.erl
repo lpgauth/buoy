@@ -20,6 +20,13 @@
     request/3
 ]).
 
+%% types
+-type body() :: undefined | iodata().
+
+-export_type([
+    body/0
+]).
+
 %% public
 -spec async_custom(binary(), buoy_url(), buoy_opts()) ->
     {ok, shackle:request_id()} | error().
