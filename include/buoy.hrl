@@ -17,14 +17,13 @@
 }).
 
 %% types
--type buoy_opts()     :: #{headers => headers(),
-                           body    => body(),
+-type buoy_opts()     :: #{headers => buoy:headers(),
+                           body    => buoy:body(),
                            pid     => pid(),
                            timeout => non_neg_integer()}.
 -type buoy_resp()     :: #buoy_resp {}.
 -type buoy_url()      :: #buoy_url {}.
 -type error()         :: {error, term()}.
--type headers()       :: [{iodata(), iodata()}].
 -type host()          :: binary().
 -type hostname()      :: binary().
 -type method()        :: get | head | post | put | {custom, binary()}.

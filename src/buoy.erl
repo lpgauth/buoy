@@ -22,9 +22,11 @@
 
 %% types
 -type body() :: undefined | iodata().
+-type headers() :: [{iodata(), iodata()}].
 
 -export_type([
-    body/0
+    body/0,
+    headers/0
 ]).
 
 %% public

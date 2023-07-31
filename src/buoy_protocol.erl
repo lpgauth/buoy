@@ -30,12 +30,12 @@ bin_patterns() ->
     }.
 
 -spec headers(buoy_resp()) ->
-    {ok, headers()} | {error, invalid_headers}.
+    {ok, buoy:headers()} | {error, invalid_headers}.
 
 headers(#buoy_resp {headers = Headers}) ->
     parse_headers(Headers, []).
 
--spec request(method(), path(), headers(), host(), buoy:body()) ->
+-spec request(method(), path(), buoy:headers(), host(), buoy:body()) ->
     iolist().
 
 request(Method, Path, Headers, Host, undefined) ->
