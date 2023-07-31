@@ -1,5 +1,5 @@
 -module(buoy_protocol).
--include("buoy_internal.hrl").
+-include("buoy.hrl").
 
 -compile(inline).
 -compile({inline_size, 512}).

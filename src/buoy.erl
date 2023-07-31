@@ -1,4 +1,5 @@
 -module(buoy).
+-include("buoy.hrl").
 -include("buoy_internal.hrl").
 
 -compile(inline).

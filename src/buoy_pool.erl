@@ -1,4 +1,5 @@
 -module(buoy_pool).
+-include("buoy.hrl").
 -include("buoy_internal.hrl").
 
 -export([

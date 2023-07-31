@@ -1,5 +1,3 @@
--include("buoy.hrl").
-
 %% macros
 -define(APP, buoy).
 -define(CLIENT, buoy_client).
