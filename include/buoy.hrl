@@ -23,14 +23,6 @@
 -type host()          :: binary().
 -type hostname()      :: binary().
 -type method()        :: get | head | post | put | {custom, binary()}.
--type option()        :: {backlog_size, pos_integer()} |
-                         {pool_size, pos_integer()} |
-                         {pool_strategy, random | round_robin} |
-                         {reconnect, boolean()} |
-                         {reconnect_time_max, pos_integer() | infinity} |
-                         {reconnect_time_min, pos_integer()} |
-                         {socket_options, [gen_tcp:connect_option() | ssl:tls_client_option()]}.
--type options()       :: [option()].
 -type path()          :: binary().
 -type protocol_http() :: http | https.
 

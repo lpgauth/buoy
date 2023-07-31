@@ -10,6 +10,20 @@
     terminate/0
 ]).
 
+%% types
+-type option() :: {backlog_size, pos_integer()} |
+                  {pool_size, pos_integer()} |
+                  {pool_strategy, random | round_robin} |
+                  {reconnect, boolean()} |
+                  {reconnect_time_max, pos_integer() | infinity} |
+                  {reconnect_time_min, pos_integer()} |
+                  {socket_options, [gen_tcp:connect_option() | ssl:tls_client_option()]}.
+-type options() :: [option()].
+
+-export_type([
+    options/0
+]).
+
 %% public
 -spec init() ->
     ok.
@@ -18,7 +32,7 @@ init() ->
     foil:new(?MODULE),
     foil:load(?MODULE).
 
--spec lookup(protocol_http(), hostname(), inet:port_number()) ->
+-spec lookup(protocol_http(), buoy:hostname(), inet:port_number()) ->
     {ok, atom()} | {error, pool_not_started | buoy_not_started}.
 
 lookup(Protocol, Hostname, Port) ->
