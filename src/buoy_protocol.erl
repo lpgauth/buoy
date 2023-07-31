@@ -35,7 +35,7 @@ bin_patterns() ->
 headers(#buoy_resp {headers = Headers}) ->
     parse_headers(Headers, []).
 
--spec request(method(), buoy:path(), buoy:headers(), buoy:host(), buoy:body()) ->
+-spec request(buoy:method(), buoy:path(), buoy:headers(), buoy:host(), buoy:body()) ->
     iolist().
 
 request(Method, Path, Headers, Host, undefined) ->
@@ -63,7 +63,7 @@ request(Method, Path, Headers, Host, Body) ->
 response(Data) ->
     response(Data, get, undefined, bin_patterns()).
 
--spec response(binary(), method(), undefined | buoy_resp(), bin_patterns()) ->
+-spec response(binary(), buoy:method(), undefined | buoy_resp(), bin_patterns()) ->
     {ok, buoy_resp(), binary()} | error().
 
 response(Data, Method, undefined, BinPatterns) ->

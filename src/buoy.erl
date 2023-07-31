@@ -25,6 +25,7 @@
 -type headers() :: [{iodata(), iodata()}].
 -type host() :: binary().
 -type hostname() :: binary().
+-type method() :: get | head | post | put | {custom, binary()}.
 -type opts() :: #{headers => headers(),
                   body    => body(),
                   pid     => pid(),
@@ -36,6 +37,7 @@
     headers/0,
     host/0,
     hostname/0,
+    method/0,
     opts/0,
     path/0
 ]).

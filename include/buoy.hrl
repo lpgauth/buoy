@@ -20,7 +20,6 @@
 -type buoy_resp()     :: #buoy_resp {}.
 -type buoy_url()      :: #buoy_url {}.
 -type error()         :: {error, term()}.
--type method()        :: get | head | post | put | {custom, binary()}.
 -type protocol_http() :: http | https.
 
 -export_type([
