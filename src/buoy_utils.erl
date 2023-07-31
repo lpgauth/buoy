@@ -10,7 +10,7 @@
 
 %% public
 -spec parse_url(binary()) ->
-    buoy_url() | {error, invalid_url}.
+    buoy:url() | {error, invalid_url}.
 
 parse_url(<<"http://", Rest/binary>>) ->
     parse_url(http, Rest);

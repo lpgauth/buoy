@@ -47,13 +47,13 @@ lookup(Protocol, Hostname, Port) ->
             {error, buoy_not_started}
     end.
 
--spec start(buoy_url()) ->
+-spec start(buoy:url()) ->
     ok | {error, pool_already_started | buoy_not_started}.
 
 start(Url) ->
     start(Url, ?DEFAULT_POOL_OPTIONS).
 
--spec start(buoy_url(), options()) ->
+-spec start(buoy:url(), options()) ->
     ok | {error, pool_already_started | buoy_not_started}.
 
 start(#buoy_url {
@@ -77,7 +77,7 @@ start(#buoy_url {
             {error, buoy_not_started}
     end.
 
--spec stop(buoy_url()) ->
+-spec stop(buoy:url()) ->
     ok | {error,  pool_not_started | buoy_not_started}.
 
 stop(#buoy_url {

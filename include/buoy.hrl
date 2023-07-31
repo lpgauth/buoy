@@ -18,10 +18,8 @@
 
 %% types
 -type buoy_resp()     :: #buoy_resp {}.
--type buoy_url()      :: #buoy_url {}.
 -type error()         :: {error, term()}.
 
 -export_type([
-    buoy_resp/0,
-    buoy_url/0
+    buoy_resp/0
 ]).
