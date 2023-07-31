@@ -23,6 +23,7 @@
 %% types
 -type body() :: undefined | iodata().
 -type headers() :: [{iodata(), iodata()}].
+-type hostname() :: binary().
 -type opts() :: #{headers => headers(),
                   body    => body(),
                   pid     => pid(),
@@ -31,6 +32,7 @@
 -export_type([
     body/0,
     headers/0,
+    hostname/0,
     opts/0
 ]).
 
