@@ -17,10 +17,6 @@
 }).
 
 %% types
--type buoy_opts()     :: #{headers => buoy:headers(),
-                           body    => buoy:body(),
-                           pid     => pid(),
-                           timeout => non_neg_integer()}.
 -type buoy_resp()     :: #buoy_resp {}.
 -type buoy_url()      :: #buoy_url {}.
 -type error()         :: {error, term()}.

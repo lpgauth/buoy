@@ -23,44 +23,49 @@
 %% types
 -type body() :: undefined | iodata().
 -type headers() :: [{iodata(), iodata()}].
+-type opts() :: #{headers => headers(),
+                  body    => body(),
+                  pid     => pid(),
+                  timeout => non_neg_integer()}.
 
 -export_type([
     body/0,
-    headers/0
+    headers/0,
+    opts/0
 ]).
 
 %% public
--spec async_custom(binary(), buoy_url(), buoy_opts()) ->
+-spec async_custom(binary(), buoy_url(), opts()) ->
     {ok, shackle:request_id()} | error().
 
 async_custom(Verb, Url, BuoyOpts) ->
     async_request({custom, Verb}, Url, BuoyOpts).
 
--spec async_get(buoy_url(), buoy_opts()) ->
+-spec async_get(buoy_url(), opts()) ->
     {ok, shackle:request_id()} | error().
 
 async_get(Url, BuoyOpts) ->
     async_request(get, Url, BuoyOpts).
 
--spec async_head(buoy_url(), buoy_opts()) ->
+-spec async_head(buoy_url(), opts()) ->
     {ok, shackle:request_id()} | error().
 
 async_head(Url, BuoyOpts) ->
     async_request(head, Url, BuoyOpts).
 
--spec async_post(buoy_url(), buoy_opts()) ->
+-spec async_post(buoy_url(), opts()) ->
     {ok, shackle:request_id()} | error().
 
 async_post(Url, BuoyOpts) ->
     async_request(post, Url, BuoyOpts).
 
--spec async_put(buoy_url(), buoy_opts()) ->
+-spec async_put(buoy_url(), opts()) ->
     {ok, shackle:request_id()} | error().
 
 async_put(Url, BuoyOpts) ->
     async_request(put, Url, BuoyOpts).
 
--spec async_request(method(), buoy_url(), buoy_opts()) ->
+-spec async_request(method(), buoy_url(), opts()) ->
     {ok, shackle:request_id()} | error().
 
 async_request(Method, #buoy_url {
@@ -83,31 +88,31 @@ async_request(Method, #buoy_url {
             E
     end.
 
--spec custom(binary(), buoy_url(), buoy_opts()) ->
+-spec custom(binary(), buoy_url(), opts()) ->
     {ok, buoy_resp()} | error().
 
 custom(Verb, Url, BuoyOpts) ->
     request({custom, Verb}, Url, BuoyOpts).
 
--spec get(buoy_url(), buoy_opts()) ->
+-spec get(buoy_url(), opts()) ->
     {ok, buoy_resp()} | error().
 
 get(Url, BuoyOpts) ->
     request(get, Url, BuoyOpts).
 
--spec head(buoy_url(), buoy_opts()) ->
+-spec head(buoy_url(), opts()) ->
     {ok, buoy_resp()} | error().
 
 head(Url, BuoyOpts) ->
     request(head, Url, BuoyOpts).
 
--spec post(buoy_url(), buoy_opts()) ->
+-spec post(buoy_url(), opts()) ->
     {ok, buoy_resp()} | error().
 
 post(Url, BuoyOpts) ->
     request(post, Url, BuoyOpts).
 
--spec put(buoy_url(), buoy_opts()) ->
+-spec put(buoy_url(), opts()) ->
     {ok, buoy_resp()} | error().
 
 put(Url, BuoyOpts) ->
@@ -119,7 +124,7 @@ put(Url, BuoyOpts) ->
 receive_response(RequestId) ->
     shackle:receive_response(RequestId).
 
--spec request(method(), buoy_url(), buoy_opts()) ->
+-spec request(method(), buoy_url(), opts()) ->
     {ok, buoy_resp()} | error().
 
 request(Method, #buoy_url {
