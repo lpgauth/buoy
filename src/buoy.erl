@@ -22,6 +22,7 @@
 
 %% types
 -type body() :: undefined | iodata().
+-type error() :: {error, term()}.
 -type headers() :: [{iodata(), iodata()}].
 -type host() :: binary().
 -type hostname() :: binary().
@@ -35,6 +36,7 @@
 
 -export_type([
     body/0,
+    error/0,
     headers/0,
     host/0,
     hostname/0,

@@ -58,13 +58,13 @@ request(Method, Path, Headers, Host, Body) ->
         Body].
 
 -spec response(binary()) ->
-    {ok, buoy_resp(), binary()} | error().
+    {ok, buoy_resp(), binary()} | buoy:error().
 
 response(Data) ->
     response(Data, get, undefined, bin_patterns()).
 
 -spec response(binary(), buoy:method(), undefined | buoy_resp(), bin_patterns()) ->
-    {ok, buoy_resp(), binary()} | error().
+    {ok, buoy_resp(), binary()} | buoy:error().
 
 response(Data, Method, undefined, BinPatterns) ->
     case parse_status_line(Data, BinPatterns) of
