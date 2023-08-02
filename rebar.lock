@@ -10,7 +10,7 @@
  {<<"metal">>,{pkg,<<"metal">>,<<"0.1.1">>},1},
  {<<"shackle">>,
   {git,"https://github.com/rkallos/shackle.git",
-       {ref,"1c071f2cf1d465a5e370c0961fdfe5a63282b1ad"}},
+       {ref,"3da046743a9ba83ee0e54dbdd2e158b937244eeb"}},
   0},
  {<<"telemetry">>,{pkg,<<"telemetry">>,<<"1.2.1">>},1}]}.
 [
