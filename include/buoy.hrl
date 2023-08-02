@@ -15,3 +15,10 @@
     port     :: inet:port_number(),
     protocol :: buoy_pool:protocol()
 }).
+
+-record(buoy_req, {
+    method  :: buoy:method(),
+    url     :: buoy:url(),
+    headers :: buoy:headers(),
+    body    :: buoy:body()
+}).

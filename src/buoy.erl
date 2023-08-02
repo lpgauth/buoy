@@ -33,6 +33,7 @@
                   pid     => pid(),
                   timeout => non_neg_integer()}.
 -type path() :: binary().
+-type req() :: #buoy_req {}.
 -type resp() :: #buoy_resp {}.
 -type url() :: #buoy_url {}.
 
@@ -45,6 +46,7 @@
     method/0,
     opts/0,
     path/0,
+    req/0,
     resp/0,
     url/0
 ]).
@@ -85,17 +87,20 @@ async_put(Url, BuoyOpts) ->
 
 async_request(Method, #buoy_url {
         protocol = Protocol,
-        host = Host,
         hostname = Hostname,
-        port = Port,
-        path = Path
-    }, BuoyOpts) ->
+        port = Port
+    } = Url, BuoyOpts) ->
 
     case buoy_pool:lookup(Protocol, Hostname, Port) of
         {ok, PoolName} ->
             Headers = buoy_opts(headers, BuoyOpts),
             Body = buoy_opts(body, BuoyOpts),
-            Request = {request, Method, Path, Headers, Host, Body},
+            Request = #buoy_req{
+                method = Method,
+                url = Url,
+                headers = Headers,
+                body = Body
+            },
             Pid = buoy_opts(pid, BuoyOpts),
             Timeout = buoy_opts(timeout, BuoyOpts),
             shackle:cast(PoolName, Request, Pid, Timeout);
@@ -144,17 +149,20 @@ receive_response(RequestId) ->
 
 request(Method, #buoy_url {
         protocol = Protocol,
-        host = Host,
         hostname = Hostname,
-        port = Port,
-        path = Path
-    }, BuoyOpts) ->
+        port = Port
+    } = Url, BuoyOpts) ->
 
     case buoy_pool:lookup(Protocol, Hostname, Port) of
         {ok, PoolName} ->
             Headers = buoy_opts(headers, BuoyOpts),
             Body = buoy_opts(body, BuoyOpts),
-            Request = {request, Method, Path, Headers, Host, Body},
+            Request = #buoy_req{
+                method = Method,
+                url = Url,
+                headers = Headers,
+                body = Body
+            },
             Timeout = buoy_opts(timeout, BuoyOpts),
             shackle:call(PoolName, Request, Timeout);
         {error, _} = E ->

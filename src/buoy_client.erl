@@ -42,15 +42,20 @@ setup(_Socket, State) ->
 -spec handle_request(term(), state()) ->
     {ok, non_neg_integer(), iodata(), state()}.
 
-handle_request({request, Method, Path, Headers, Host, Body}, #state {
+handle_request(#buoy_req{
+        method = Method,
+        url = #buoy_url{host = Host, path = Path},
+        headers = Headers, body = Body
+    } = Request,
+    #state {
         queue = Queue,
         request_id = RequestId
     } = State) ->
 
-    Request = buoy_protocol:request(Method, Path, Headers, Host, Body),
+    RequestData = buoy_protocol:request(Method, Path, Headers, Host, Body),
 
-    {ok, RequestId, Request, State#state {
-        queue = queue:in({RequestId, Method}, Queue),
+    {ok, RequestId, RequestData, State#state {
+        queue = queue:in({RequestId, Request}, Queue),
         request_id = RequestId + 1
     }}.
 
@@ -87,7 +92,7 @@ terminate(_State) ->
 responses(<<>>, Queue, Response, _BinPatterns, Responses) ->
     {ok, Queue, Response, Responses, <<>>};
 responses(Data, Queue, Response, BinPatterns, Responses) ->
-    {value, {_, Method}} = queue:peek(Queue),
+    {value, {_, #buoy_req{method = Method}}} = queue:peek(Queue),
     case buoy_protocol:response(Data, Method, Response, BinPatterns) of
         {ok, #buoy_resp {state = done} = Response2, Rest} ->
             {{value, {RequestId, _}}, Queue2} = queue:out(Queue),
