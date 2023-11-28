@@ -4,17 +4,14 @@ High-Performance Erlang HTTP 1.1 Client
 
 ![Build Status](https://github.com/lpgauth/buoy/workflows/Erlang%20CI/badge.svg)
 
-## Disclaimer:
+## Disclaimer
 This HTTP client has been designed for HTTP 1.1 with keep-alive. For performance reasons, it only implements a subset of RFC2616.
 
-### Unsupported Features:
+## Unsupported Features
 
 - Doesn't accept an arbitrary number of new lines in headers
 - Doesn't accept random capitalization of content-length header
 - Doesn't protect against malicious servers
-
-## API
-<a href="http://github.com/lpgauth/buoy/blob/master/doc/buoy.md#index" class="module">Function Index</a>
 
 ## Examples
 
@@ -56,7 +53,7 @@ ok
      {<<"Content-Length">>,<<"1270">>}]}
 ```
 
-### Pool Options
+## Pool Options
 
 <table width="100%">
   <theader>

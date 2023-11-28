@@ -1,4 +1,5 @@
 -module(buoy_pool).
+-include("buoy.hrl").
 -include("buoy_internal.hrl").
 
 -export([
@@ -10,6 +11,22 @@
     terminate/0
 ]).
 
+%% types
+-type option() :: {backlog_size, pos_integer()} |
+                  {pool_size, pos_integer()} |
+                  {pool_strategy, random | round_robin} |
+                  {reconnect, boolean()} |
+                  {reconnect_time_max, pos_integer() | infinity} |
+                  {reconnect_time_min, pos_integer()} |
+                  {socket_options, [gen_tcp:connect_option() | ssl:tls_client_option()]}.
+-type options() :: [option()].
+-type protocol() :: http | https.
+
+-export_type([
+    options/0,
+    protocol/0
+]).
+
 %% public
 -spec init() ->
     ok.
@@ -18,7 +35,7 @@ init() ->
     foil:new(?MODULE),
     foil:load(?MODULE).
 
--spec lookup(protocol_http(), hostname(), inet:port_number()) ->
+-spec lookup(protocol(), buoy:hostname(), inet:port_number()) ->
     {ok, atom()} | {error, pool_not_started | buoy_not_started}.
 
 lookup(Protocol, Hostname, Port) ->
@@ -31,13 +48,13 @@ lookup(Protocol, Hostname, Port) ->
             {error, buoy_not_started}
     end.
 
--spec start(buoy_url()) ->
+-spec start(buoy:url()) ->
     ok | {error, pool_already_started | buoy_not_started}.
 
 start(Url) ->
     start(Url, ?DEFAULT_POOL_OPTIONS).
 
--spec start(buoy_url(), options()) ->
+-spec start(buoy:url(), options()) ->
     ok | {error, pool_already_started | buoy_not_started}.
 
 start(#buoy_url {
@@ -61,7 +78,7 @@ start(#buoy_url {
             {error, buoy_not_started}
     end.
 
--spec stop(buoy_url()) ->
+-spec stop(buoy:url()) ->
     ok | {error,  pool_not_started | buoy_not_started}.
 
 stop(#buoy_url {

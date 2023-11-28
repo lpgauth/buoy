@@ -9,12 +9,15 @@
   1},
  {<<"metal">>,{pkg,<<"metal">>,<<"0.1.1">>},1},
  {<<"shackle">>,
-  {git,"https://github.com/lpgauth/shackle.git",
-       {ref,"a4f7d82d10115cf0d676582b638a56260be685d5"}},
-  0}]}.
+  {git,"https://github.com/rkallos/shackle.git",
+       {ref,"3da046743a9ba83ee0e54dbdd2e158b937244eeb"}},
+  0},
+ {<<"telemetry">>,{pkg,<<"telemetry">>,<<"1.2.1">>},1}]}.
 [
 {pkg_hash,[
- {<<"metal">>, <<"5D3D1322DA7BCD34B94FED5486F577973685298883954F7A3E517EF5EF6953F5">>}]},
+ {<<"metal">>, <<"5D3D1322DA7BCD34B94FED5486F577973685298883954F7A3E517EF5EF6953F5">>},
+ {<<"telemetry">>, <<"68FDFE8D8F05A8428483A97D7AAB2F268AAFF24B49E0F599FAA091F1D4E7F61C">>}]},
 {pkg_hash_ext,[
- {<<"metal">>, <<"88B82B634998A1A768DEDCD372C2F7E657B19445325C0AF5CCBAC62C77210F1D">>}]}
+ {<<"metal">>, <<"88B82B634998A1A768DEDCD372C2F7E657B19445325C0AF5CCBAC62C77210F1D">>},
+ {<<"telemetry">>, <<"DAD9CE9D8EFFC621708F99EAC538EF1CBE05D6A874DD741DE2E689C47FEAFED5">>}]}
 ].

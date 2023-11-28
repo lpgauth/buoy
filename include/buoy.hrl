@@ -9,38 +9,16 @@
 }).
 
 -record(buoy_url, {
-    host     :: host(),
-    hostname :: hostname(),
-    path     :: path(),
+    host     :: buoy:host(),
+    hostname :: buoy:hostname(),
+    path     :: buoy:path(),
     port     :: inet:port_number(),
-    protocol :: protocol_http()
+    protocol :: buoy_pool:protocol()
 }).
 
-%% types
--type body()          :: undefined | iodata().
--type buoy_opts()     :: #{headers => headers(),
-                           body    => body(),
-                           pid     => pid(),
-                           timeout => non_neg_integer()}.
--type buoy_resp()     :: #buoy_resp {}.
--type buoy_url()      :: #buoy_url {}.
--type error()         :: {error, term()}.
--type headers()       :: [{iodata(), iodata()}].
--type host()          :: binary().
--type hostname()      :: binary().
--type method()        :: get | head | post | put | {custom, binary()}.
--type option()        :: {backlog_size, pos_integer()} |
-                         {pool_size, pos_integer()} |
-                         {pool_strategy, random | round_robin} |
-                         {reconnect, boolean()} |
-                         {reconnect_time_max, pos_integer() | infinity} |
-                         {reconnect_time_min, pos_integer()} |
-                         {socket_options, [gen_tcp:connect_option() | ssl:tls_client_option()]}.
--type options()       :: [option()].
--type path()          :: binary().
--type protocol_http() :: http | https.
-
--export_type([
-    buoy_resp/0,
-    buoy_url/0
-]).
+-record(buoy_req, {
+    method  :: buoy:method(),
+    url     :: buoy:url(),
+    headers :: buoy:headers(),
+    body    :: buoy:body()
+}).

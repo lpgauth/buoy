@@ -1,5 +1,5 @@
 -module(buoy_protocol).
--include("buoy_internal.hrl").
+-include("buoy.hrl").
 
 -compile(inline).
 -compile({inline_size, 512}).
@@ -29,13 +29,13 @@ bin_patterns() ->
         rnrn = binary:compile_pattern(<<"\r\n\r\n">>)
     }.
 
--spec headers(buoy_resp()) ->
-    {ok, headers()} | {error, invalid_headers}.
+-spec headers(buoy:resp()) ->
+    {ok, buoy:headers()} | {error, invalid_headers}.
 
 headers(#buoy_resp {headers = Headers}) ->
     parse_headers(Headers, []).
 
--spec request(method(), path(), headers(), host(), body()) ->
+-spec request(buoy:method(), buoy:path(), buoy:headers(), buoy:host(), buoy:body()) ->
     iolist().
 
 request(Method, Path, Headers, Host, undefined) ->
@@ -58,13 +58,13 @@ request(Method, Path, Headers, Host, Body) ->
         Body].
 
 -spec response(binary()) ->
-    {ok, buoy_resp(), binary()} | error().
+    {ok, buoy:resp(), binary()} | buoy:error().
 
 response(Data) ->
     response(Data, get, undefined, bin_patterns()).
 
--spec response(binary(), method(), undefined | buoy_resp(), bin_patterns()) ->
-    {ok, buoy_resp(), binary()} | error().
+-spec response(binary(), buoy:method(), undefined | buoy:resp(), bin_patterns()) ->
+    {ok, buoy:resp(), binary()} | buoy:error().
 
 response(Data, Method, undefined, BinPatterns) ->
     case parse_status_line(Data, BinPatterns) of

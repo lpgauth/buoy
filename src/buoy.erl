@@ -1,4 +1,5 @@
 -module(buoy).
+-include("buoy.hrl").
 -include("buoy_internal.hrl").
 
 -compile(inline).
@@ -20,53 +21,86 @@
     request/3
 ]).
 
+%% types
+-type body() :: undefined | iodata().
+-type error() :: {error, term()}.
+-type headers() :: [{iodata(), iodata()}].
+-type host() :: binary().
+-type hostname() :: binary().
+-type method() :: get | head | post | put | {custom, binary()}.
+-type opts() :: #{headers => headers(),
+                  body    => body(),
+                  pid     => pid(),
+                  timeout => non_neg_integer()}.
+-type path() :: binary().
+-type req() :: #buoy_req {}.
+-type resp() :: #buoy_resp {}.
+-type url() :: #buoy_url {}.
+
+-export_type([
+    body/0,
+    error/0,
+    headers/0,
+    host/0,
+    hostname/0,
+    method/0,
+    opts/0,
+    path/0,
+    req/0,
+    resp/0,
+    url/0
+]).
+
 %% public
--spec async_custom(binary(), buoy_url(), buoy_opts()) ->
+-spec async_custom(binary(), url(), opts()) ->
     {ok, shackle:request_id()} | error().
 
 async_custom(Verb, Url, BuoyOpts) ->
     async_request({custom, Verb}, Url, BuoyOpts).
 
--spec async_get(buoy_url(), buoy_opts()) ->
+-spec async_get(url(), opts()) ->
     {ok, shackle:request_id()} | error().
 
 async_get(Url, BuoyOpts) ->
     async_request(get, Url, BuoyOpts).
 
--spec async_head(buoy_url(), buoy_opts()) ->
+-spec async_head(url(), opts()) ->
     {ok, shackle:request_id()} | error().
 
 async_head(Url, BuoyOpts) ->
     async_request(head, Url, BuoyOpts).
 
--spec async_post(buoy_url(), buoy_opts()) ->
+-spec async_post(url(), opts()) ->
     {ok, shackle:request_id()} | error().
 
 async_post(Url, BuoyOpts) ->
     async_request(post, Url, BuoyOpts).
 
--spec async_put(buoy_url(), buoy_opts()) ->
+-spec async_put(url(), opts()) ->
     {ok, shackle:request_id()} | error().
 
 async_put(Url, BuoyOpts) ->
     async_request(put, Url, BuoyOpts).
 
--spec async_request(method(), buoy_url(), buoy_opts()) ->
+-spec async_request(method(), url(), opts()) ->
     {ok, shackle:request_id()} | error().
 
 async_request(Method, #buoy_url {
         protocol = Protocol,
-        host = Host,
         hostname = Hostname,
-        port = Port,
-        path = Path
-    }, BuoyOpts) ->
+        port = Port
+    } = Url, BuoyOpts) ->
 
     case buoy_pool:lookup(Protocol, Hostname, Port) of
         {ok, PoolName} ->
             Headers = buoy_opts(headers, BuoyOpts),
             Body = buoy_opts(body, BuoyOpts),
-            Request = {request, Method, Path, Headers, Host, Body},
+            Request = #buoy_req{
+                method = Method,
+                url = Url,
+                headers = Headers,
+                body = Body
+            },
             Pid = buoy_opts(pid, BuoyOpts),
             Timeout = buoy_opts(timeout, BuoyOpts),
             shackle:cast(PoolName, Request, Pid, Timeout);
@@ -74,32 +108,32 @@ async_request(Method, #buoy_url {
             E
     end.
 
--spec custom(binary(), buoy_url(), buoy_opts()) ->
-    {ok, buoy_resp()} | error().
+-spec custom(binary(), url(), opts()) ->
+    {ok, resp()} | error().
 
 custom(Verb, Url, BuoyOpts) ->
     request({custom, Verb}, Url, BuoyOpts).
 
--spec get(buoy_url(), buoy_opts()) ->
-    {ok, buoy_resp()} | error().
+-spec get(url(), opts()) ->
+    {ok, resp()} | error().
 
 get(Url, BuoyOpts) ->
     request(get, Url, BuoyOpts).
 
--spec head(buoy_url(), buoy_opts()) ->
-    {ok, buoy_resp()} | error().
+-spec head(url(), opts()) ->
+    {ok, resp()} | error().
 
 head(Url, BuoyOpts) ->
     request(head, Url, BuoyOpts).
 
--spec post(buoy_url(), buoy_opts()) ->
-    {ok, buoy_resp()} | error().
+-spec post(url(), opts()) ->
+    {ok, resp()} | error().
 
 post(Url, BuoyOpts) ->
     request(post, Url, BuoyOpts).
 
--spec put(buoy_url(), buoy_opts()) ->
-    {ok, buoy_resp()} | error().
+-spec put(url(), opts()) ->
+    {ok, resp()} | error().
 
 put(Url, BuoyOpts) ->
     request(put, Url, BuoyOpts).
@@ -110,22 +144,25 @@ put(Url, BuoyOpts) ->
 receive_response(RequestId) ->
     shackle:receive_response(RequestId).
 
--spec request(method(), buoy_url(), buoy_opts()) ->
-    {ok, buoy_resp()} | error().
+-spec request(method(), url(), opts()) ->
+    {ok, resp()} | error().
 
 request(Method, #buoy_url {
         protocol = Protocol,
-        host = Host,
         hostname = Hostname,
-        port = Port,
-        path = Path
-    }, BuoyOpts) ->
+        port = Port
+    } = Url, BuoyOpts) ->
 
     case buoy_pool:lookup(Protocol, Hostname, Port) of
         {ok, PoolName} ->
             Headers = buoy_opts(headers, BuoyOpts),
             Body = buoy_opts(body, BuoyOpts),
-            Request = {request, Method, Path, Headers, Host, Body},
+            Request = #buoy_req{
+                method = Method,
+                url = Url,
+                headers = Headers,
+                body = Body
+            },
             Timeout = buoy_opts(timeout, BuoyOpts),
             shackle:call(PoolName, Request, Timeout);
         {error, _} = E ->
