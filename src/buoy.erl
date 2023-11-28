@@ -104,7 +104,7 @@ post(Url, BuoyOpts) ->
 put(Url, BuoyOpts) ->
     request(put, Url, BuoyOpts).
 
--spec receive_response(request_id()) ->
+-spec receive_response(shackle:request_id()) ->
     {ok, term()} | error().
 
 receive_response(RequestId) ->
