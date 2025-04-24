@@ -148,7 +148,7 @@ binary_split_global(Bin, Pattern) ->
     end.
 
 content_length([]) ->
-    undefined;
+    chunked;
 content_length([<<"Content-Length: ", Rest/binary>> | _T]) ->
     binary_to_integer(Rest);
 content_length([<<"content-length: ", Rest/binary>> | _T]) ->
