@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.2.8
+
+### Added
+
+- `error_reason/0` is now a documented sum type, exported alongside
+  `error/0`. It enumerates the eight atoms that buoy can put in the
+  second slot of `{error, _}`:
+
+  - `pool_not_started`, `buoy_not_started`, `pool_already_started`,
+    `invalid_url` (buoy-level)
+  - `invalid_headers`, `invalid_chunk_size` (HTTP parser errors)
+  - `no_server`, `shackle_not_started`, `timeout` (shackle errors
+    that propagate through buoy)
+
+  `error/0` itself stays loose (`{error, term()}`) — tightening it
+  to a closed sum produces dialyzer false positives in
+  `buoy_client:responses/5`, where the `{error, not_enough_data}`
+  buffering pattern is semantically required at runtime but
+  unreachable from dialyzer's flow analysis. The documented
+  `error_reason/0` covers the documentation half of the A2
+  standardization without the analyzer cost.
+
+### Exported types
+
+  - `error/0`
+  - `error_reason/0`
+
 ## 0.2.7
 
 ### Added
