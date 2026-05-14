@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.2.9
+
+### Changed
+
+- `split_headers` now calls `binary:split(Headers, Rn, [global])`
+  instead of the hand-rolled recursive `binary_split_global/2`.
+  The native BIF skips the function-call-per-token overhead and
+  is generally faster on the hot path (header split fires once
+  per response). The hand-rolled helper is gone.
+
+### Plan-time notes
+
+- B6's "chunked decoding accumulates iolist instead of flattening
+  per chunk" recommendation was checked on inspection and not
+  acted on: `parse_chunks/3` already accumulates chunk bodies in
+  a list (`[Body | Acc]`) and calls `iolist_to_binary` exactly
+  once at the end. The plan's claim of "iolist_to_binary per
+  chunk" was incorrect.
+
 ## 0.2.8
 
 ### Added
