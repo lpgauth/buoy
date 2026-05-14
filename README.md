@@ -14,13 +14,14 @@ This HTTP client has been designed for HTTP 1.1 with keep-alive. For performance
 - Doesn't protect against malicious servers
 
 ## API
-<a href="http://github.com/lpgauth/buoy/blob/master/doc/buoy.md#index" class="module">Function Index</a>
+
+[Function reference on hexdocs](https://hexdocs.pm/buoy/)
 
 ## Examples
 
 ```erlang
 1> buoy_app:start().
-{ok,[granderl,shackle,buoy]}
+{ok,[telemetry,knot,metal,foil,shackle,buoy]}
 
 2> Url = buoy_utils:parse_url(<<"http://example.com">>).
 {buoy_url,<<"example.com">>,<<"example.com">>,<<"/">>,80,
@@ -116,16 +117,14 @@ ok
 ## Tests
 
 ```makefile
-make dialyzer
-make eunit
-make xref
+make test
 ```
 
 ## License
 ```license
 The MIT License (MIT)
 
-Copyright (c) 2016-2023 Louis-Philippe Gauthier
+Copyright (c) 2016-2026 Louis-Philippe Gauthier
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
