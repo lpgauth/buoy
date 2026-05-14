@@ -30,7 +30,9 @@ buoy_test_() ->
         fun pool_subtest/0,
         fun post_subtest/0,
         fun put_subtest/0,
-        fun head_subtest/0
+        fun head_subtest/0,
+        fun telemetry_sent_subtest/0,
+        fun telemetry_error_subtest/0
     ]}.
 
 %% tests
@@ -74,6 +76,47 @@ head_subtest() ->
     {ok, ?RESP_1} = buoy:head(?URL(?URL_1), #{}),
     {ok, ?RESP_2} = buoy:head(?URL(?URL_2), #{}),
     {ok, ?RESP_4} = buoy:head(?URL(?URL_4), #{}).
+
+telemetry_sent_subtest() ->
+    Self = self(),
+    HandlerId = <<"buoy-test-sent">>,
+    ok = telemetry:attach(HandlerId, [buoy, request, sent],
+        fun (Event, Measurements, Metadata, _) ->
+            Self ! {telemetry, Event, Measurements, Metadata}
+        end, undefined),
+    try
+        {ok, ?RESP_1} = buoy:get(?URL(?URL_1), #{}),
+        receive
+            {telemetry, [buoy, request, sent],
+             #{count := 1},
+             #{method := get, async := false}} -> ok
+        after 1000 ->
+            erlang:error(timeout_waiting_for_sent_event)
+        end
+    after
+        telemetry:detach(HandlerId)
+    end.
+
+telemetry_error_subtest() ->
+    Self = self(),
+    HandlerId = <<"buoy-test-error">>,
+    ok = telemetry:attach(HandlerId, [buoy, request, error],
+        fun (Event, Measurements, Metadata, _) ->
+            Self ! {telemetry, Event, Measurements, Metadata}
+        end, undefined),
+    try
+        UnstartedUrl = ?URL(<<"http://127.0.0.1:9999/x">>),
+        {error, pool_not_started} = buoy:get(UnstartedUrl, #{}),
+        receive
+            {telemetry, [buoy, request, error],
+             #{count := 1},
+             #{method := get, reason := pool_not_started}} -> ok
+        after 1000 ->
+            erlang:error(timeout_waiting_for_error_event)
+        end
+    after
+        telemetry:detach(HandlerId)
+    end.
 
 %% utils
 cleanup() ->

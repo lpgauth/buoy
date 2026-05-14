@@ -69,8 +69,16 @@ async_request(Method, #buoy_url {
             Request = {request, Method, Path, Headers, Host, Body},
             Pid = buoy_opts(pid, BuoyOpts),
             Timeout = buoy_opts(timeout, BuoyOpts),
+            telemetry:execute([buoy, request, sent],
+                              #{count => 1},
+                              #{method => Method, host => Host,
+                                async => true}),
             shackle:cast(PoolName, Request, Pid, Timeout);
-        {error, _} = E ->
+        {error, Reason} = E ->
+            telemetry:execute([buoy, request, error],
+                              #{count => 1},
+                              #{method => Method, host => Host,
+                                reason => Reason}),
             E
     end.
 
@@ -127,8 +135,16 @@ request(Method, #buoy_url {
             Body = buoy_opts(body, BuoyOpts),
             Request = {request, Method, Path, Headers, Host, Body},
             Timeout = buoy_opts(timeout, BuoyOpts),
+            telemetry:execute([buoy, request, sent],
+                              #{count => 1},
+                              #{method => Method, host => Host,
+                                async => false}),
             shackle:call(PoolName, Request, Timeout);
-        {error, _} = E ->
+        {error, Reason} = E ->
+            telemetry:execute([buoy, request, error],
+                              #{count => 1},
+                              #{method => Method, host => Host,
+                                reason => Reason}),
             E
     end.
 

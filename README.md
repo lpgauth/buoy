@@ -114,6 +114,23 @@ ok
   </tr>
 </table>
 
+## Telemetry
+
+buoy emits two telemetry events at the request boundary. Attach
+handlers via `telemetry:attach/4`:
+
+| Event | Measurements | Metadata |
+|---|---|---|
+| `[buoy, request, sent]`  | `count => 1` | `method, host, async` |
+| `[buoy, request, error]` | `count => 1` | `method, host, reason` |
+
+`sent` fires when the request hits shackle for dispatch (sync and
+async paths both); `error` fires when the pool lookup fails (e.g.
+`pool_not_started`). Per-request lifecycle (queue / send / receive)
+remains observable via shackle's own telemetry — buoy's events
+surface the buoy-level routing decision without duplicating that
+work.
+
 ## Tests
 
 ```makefile

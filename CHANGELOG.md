@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.2.7
+
+### Added
+
+- Two telemetry events at the request boundary:
+
+  | Event | Measurements | Metadata |
+  |---|---|---|
+  | `[buoy, request, sent]`  | `count => 1` | `method, host, async` |
+  | `[buoy, request, error]` | `count => 1` | `method, host, reason` |
+
+  `sent` fires when the request hits shackle for dispatch (sync and
+  async paths both); `error` fires when the pool lookup fails (e.g.
+  `pool_not_started`). Attach handlers via `telemetry:attach/4`.
+
+  Per-request lifecycle (queue / send / receive) remains observable
+  via shackle's own telemetry — buoy's events surface the buoy-level
+  routing decision without duplicating that work.
+
+- `telemetry` (1.4.2) is now a direct dependency (was already
+  transitively present via shackle).
+
+- `vsn` in `buoy.app.src` is now an explicit string (`"0.2.7"`) — was
+  `git`, which only works when built from a checkout.
+
+No source or API changes.
+
 ## 0.2.6
 
 Infrastructure refresh: dep bumps + docs migration.
