@@ -114,6 +114,16 @@ ok
   </tr>
 </table>
 
+## Errors
+
+All `buoy:*` calls return `{ok, term()} | {error, error_reason()}` where `error_reason/0` (exported, added in 0.2.8) enumerates:
+
+- **buoy-level** — `pool_not_started`, `buoy_not_started`, `pool_already_started`, `invalid_url`.
+- **HTTP parser** — `invalid_headers`, `invalid_chunk_size` (surfaced by `buoy_protocol` via shackle's `handle_data` callback when a malformed response arrives).
+- **shackle** that propagate through buoy — `no_server`, `shackle_not_started`, `timeout`.
+
+`error/0` itself stays `{error, term()}` (not the tight sum) — see `include/buoy.hrl` for the rationale, briefly: `buoy_client`'s `responses/5` has a `{error, not_enough_data}` buffering branch that's semantically required at runtime but unreachable from dialyzer's flow analysis when `error/0` is a closed sum. `error_reason/0` covers the documentation half without the analyzer cost.
+
 ## Telemetry
 
 buoy emits two telemetry events at the request boundary. Attach
