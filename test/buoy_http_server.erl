@@ -5,49 +5,124 @@
     stop/0
 ]).
 
--export([
-    init/2
-]).
+-define(PORT, 8080).
 
 %% public
 start() ->
-    application:ensure_all_started(cowboy),
-    Dispatch = cowboy_router:compile([{'_', [
-        {"/:test", ?MODULE, []}]}]),
-    {ok, _} = cowboy:start_clear(?MODULE, [{port, 8080}], #{
-        env => #{dispatch => Dispatch},
-        max_keepalive => infinity,
-        request_timeout => infinity
-    }).
+    Self = self(),
+    Pid = spawn(fun () -> init(Self) end),
+    receive
+        {Pid, started} ->
+            {ok, Pid}
+    after 5000 ->
+        {error, timeout}
+    end.
 
 stop() ->
-    cowboy:stop_listener(?MODULE).
-
-%% cowboy callbacks
-init(Req, State) ->
-    case cowboy_req:binding(test, Req) of
-        <<"1">> ->
-            reply(200, <<"Hello world!">>, Req, State);
-        <<"2">> ->
-            Body = [<<"Hello world!">> || _ <- lists:seq(1, 1000)],
-            reply(200, Body, Req, State);
-        <<"3">> ->
-            {ok, Body, Req2} = cowboy_req:read_body(Req),
-            reply(200, Body, Req2, State);
-        <<"4">> ->
-            Req2 = cowboy_req:stream_reply(200, Req),
-            ok = cowboy_req:stream_body("Hello", nofin, Req2),
-            ok = cowboy_req:stream_body(" world!", fin, Req2),
-            {ok, Req2, State};
-        <<"5">> ->
-            Verb = cowboy_req:method(Req),
-            reply(200, Verb, Req, State)
+    case whereis(?MODULE) of
+        undefined ->
+            ok;
+        Pid ->
+            exit(Pid, kill),
+            ok
     end.
 
 %% private
-reply(StatusCode, Body, Req, State) ->
-    Req2 = cowboy_req:reply(StatusCode, #{
-        <<"Content-Type">> => <<"text/plain">>,
-        <<"Connection">> => <<"Keep-Alive">>
-    }, Body, Req),
-    {ok, Req2, State}.
+init(Parent) ->
+    register(?MODULE, self()),
+    {ok, LSocket} = gen_tcp:listen(?PORT, [
+        binary,
+        {active, false},
+        {backlog, 128},
+        {packet, http_bin},
+        {reuseaddr, true}
+    ]),
+    Parent ! {self(), started},
+    accept(LSocket).
+
+accept(LSocket) ->
+    {ok, Socket} = gen_tcp:accept(LSocket),
+    Pid = spawn_link(fun () ->
+        receive go -> connection(Socket) end
+    end),
+    ok = gen_tcp:controlling_process(Socket, Pid),
+    Pid ! go,
+    accept(LSocket).
+
+connection(Socket) ->
+    case gen_tcp:recv(Socket, 0) of
+        {ok, {http_request, Method, {abs_path, Path}, _Version}} ->
+            ContentLength = headers(Socket, 0),
+            Body = body(Socket, ContentLength),
+            respond(Socket, Method, Path, Body),
+            connection(Socket);
+        {ok, _} ->
+            gen_tcp:close(Socket);
+        {error, _} ->
+            gen_tcp:close(Socket)
+    end.
+
+headers(Socket, ContentLength) ->
+    case gen_tcp:recv(Socket, 0) of
+        {ok, {http_header, _, 'Content-Length', _, Value}} ->
+            headers(Socket, binary_to_integer(Value));
+        {ok, {http_header, _, _, _, _}} ->
+            headers(Socket, ContentLength);
+        {ok, http_eoh} ->
+            ContentLength
+    end.
+
+body(_Socket, 0) ->
+    <<>>;
+body(Socket, ContentLength) ->
+    ok = inet:setopts(Socket, [{packet, raw}]),
+    {ok, Body} = gen_tcp:recv(Socket, ContentLength),
+    ok = inet:setopts(Socket, [{packet, http_bin}]),
+    Body.
+
+respond(Socket, Method, <<"/1">>, _Body) ->
+    reply(Socket, Method, <<"Hello world!">>);
+respond(Socket, Method, <<"/2">>, _Body) ->
+    reply(Socket, Method, binary:copy(<<"Hello world!">>, 1000));
+respond(Socket, Method, <<"/3">>, Body) ->
+    reply(Socket, Method, Body);
+respond(Socket, Method, <<"/4">>, _Body) ->
+    chunked_reply(Socket, Method, [<<"Hello">>, <<" world!">>]);
+respond(Socket, Method, <<"/5">>, _Body) ->
+    reply(Socket, Method, method(Method)).
+
+method(Method) when is_atom(Method) ->
+    atom_to_binary(Method, utf8);
+method(Method) when is_binary(Method) ->
+    Method.
+
+reply(Socket, Method, Body) ->
+    Headers = [
+        <<"HTTP/1.1 200 OK\r\n">>,
+        <<"Connection: Keep-Alive\r\n">>,
+        <<"Content-Type: text/plain\r\n">>,
+        <<"Content-Length: ">>, integer_to_binary(iolist_size(Body)),
+        <<"\r\n\r\n">>
+    ],
+    case Method of
+        'HEAD' ->
+            ok = gen_tcp:send(Socket, Headers);
+        _ ->
+            ok = gen_tcp:send(Socket, [Headers, Body])
+    end.
+
+chunked_reply(Socket, Method, Chunks) ->
+    Headers = [
+        <<"HTTP/1.1 200 OK\r\n">>,
+        <<"Connection: Keep-Alive\r\n">>,
+        <<"Content-Type: text/plain\r\n">>,
+        <<"Transfer-Encoding: chunked\r\n\r\n">>
+    ],
+    case Method of
+        'HEAD' ->
+            ok = gen_tcp:send(Socket, Headers);
+        _ ->
+            Encoded = [[integer_to_binary(byte_size(Chunk), 16), <<"\r\n">>,
+                Chunk, <<"\r\n">>] || Chunk <- Chunks],
+            ok = gen_tcp:send(Socket, [Headers, Encoded, <<"0\r\n\r\n">>])
+    end.
