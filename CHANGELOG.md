@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.10
+
+### Changed
+
+- Upgrade foil to 0.1.6 and shackle to 0.7.3 (pulls in knot 0.1.2
+  transitively).
+- Replace the cowboy eunit HTTP fixture with a small gen_tcp server;
+  buoy no longer has any test-profile deps.
+- Remove fprofx profile tooling.
+
 ## 0.2.9
 
 ### Changed
