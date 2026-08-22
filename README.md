@@ -85,6 +85,14 @@ ok
     <td>connection selection strategy</td>
   </tr>
   <tr>
+    <td>protocol</td>
+    <td>shackle_socket | shackle_tcp</td>
+    <td>shackle_tcp</td>
+    <td>shackle transport for http pools (shackle_socket runs on the
+    socket NIF and needs OTP 27.3+); https pools always use
+    shackle_ssl</td>
+  </tr>
+  <tr>
     <td>reconnect</td>
     <td>boolean()</td>
     <td>true</td>
@@ -140,6 +148,9 @@ async paths both); `error` fires when the pool lookup fails (e.g.
 remains observable via shackle's own telemetry — buoy's events
 surface the buoy-level routing decision without duplicating that
 work.
+
+Set the `telemetry` app env to `false` to skip event emission
+entirely (read once at application start).
 
 ## Tests
 

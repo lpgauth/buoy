@@ -33,7 +33,7 @@ init(_Opts) ->
         queue = queue:new()
     }}.
 
--spec setup(inet:socket(), state()) ->
+-spec setup(shackle:socket(), state()) ->
     {ok, state()}.
 
 setup(_Socket, State) ->

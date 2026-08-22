@@ -32,8 +32,26 @@ buoy_test_() ->
         fun put_subtest/0,
         fun head_subtest/0,
         fun telemetry_sent_subtest/0,
-        fun telemetry_error_subtest/0
+        fun telemetry_error_subtest/0,
+        fun telemetry_disabled_subtest/0
     ]}.
+
+buoy_socket_test_() ->
+    case list_to_integer(erlang:system_info(otp_release)) >= 27 of
+        true ->
+            {setup,
+                fun () -> setup([{protocol, shackle_socket}]) end,
+                fun (_) -> cleanup() end,
+            [
+                fun custom_subtest/0,
+                fun get_subtest/0,
+                fun post_subtest/0,
+                fun put_subtest/0,
+                fun head_subtest/0
+            ]};
+        false ->
+            []
+    end.
 
 %% tests
 custom_subtest() ->
@@ -118,6 +136,27 @@ telemetry_error_subtest() ->
         telemetry:detach(HandlerId)
     end.
 
+telemetry_disabled_subtest() ->
+    Self = self(),
+    HandlerId = <<"buoy-test-disabled">>,
+    ok = telemetry:attach(HandlerId, [buoy, request, sent],
+        fun (Event, Measurements, Metadata, _) ->
+            Self ! {telemetry, Event, Measurements, Metadata}
+        end, undefined),
+    persistent_term:put({buoy, telemetry}, false),
+    try
+        {ok, ?RESP_1} = buoy:get(?URL(?URL_1), #{}),
+        receive
+            {telemetry, _, _, _} ->
+                erlang:error(unexpected_telemetry_event)
+        after 200 ->
+            ok
+        end
+    after
+        persistent_term:put({buoy, telemetry}, true),
+        telemetry:detach(HandlerId)
+    end.
+
 %% utils
 cleanup() ->
     buoy_pool:stop(?URL(?URL_1)),
@@ -125,9 +164,12 @@ cleanup() ->
     buoy_http_server:stop().
 
 setup() ->
+    setup([]).
+
+setup(PoolOptions) ->
     error_logger:tty(false),
     {ok, _} = buoy_http_server:start(),
     timer:sleep(200),
     buoy_app:start(),
-    buoy_pool:start(?URL(?URL_1)),
+    buoy_pool:start(?URL(?URL_1), PoolOptions),
     timer:sleep(200).

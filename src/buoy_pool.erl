@@ -100,7 +100,7 @@ client_options(Protocol, Hostname, Port, Options) ->
 
     [{ip, binary_to_list(Hostname)},
      {port, Port},
-     {protocol, shackle_protocol(Protocol)},
+     {protocol, shackle_protocol(Protocol, Options)},
      {reconnect, Reconnect},
      {reconnect_time_max, ReconnectTimeMax},
      {reconnect_time_min, ReconnectTimeMin},
@@ -120,7 +120,7 @@ pool_options(Options) ->
      {pool_size, PoolSize},
      {pool_strategy, PoolStrategy}].
 
-shackle_protocol(http) ->
-    shackle_tcp;
-shackle_protocol(https) ->
+shackle_protocol(http, Options) ->
+    ?LOOKUP(protocol, Options, ?GET_ENV(protocol, shackle_tcp));
+shackle_protocol(https, _Options) ->
     shackle_ssl.
