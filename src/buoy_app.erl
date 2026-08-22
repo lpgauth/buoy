@@ -36,5 +36,4 @@ start(_StartType, _StartArgs) ->
     ok.
 
 stop(_State) ->
-    shackle_pool:terminate(),
     ok.
