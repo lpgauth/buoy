@@ -89,7 +89,7 @@ ok
     <td>shackle_socket | shackle_tcp</td>
     <td>shackle_tcp</td>
     <td>shackle transport for http pools (shackle_socket runs on the
-    socket NIF and needs OTP 27.3+); https pools always use
+    socket NIF and needs OTP 28+); https pools always use
     shackle_ssl</td>
   </tr>
   <tr>

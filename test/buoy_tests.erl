@@ -37,7 +37,7 @@ buoy_test_() ->
     ]}.
 
 buoy_socket_test_() ->
-    case list_to_integer(erlang:system_info(otp_release)) >= 27 of
+    case list_to_integer(erlang:system_info(otp_release)) >= 28 of
         true ->
             {setup,
                 fun () -> setup([{protocol, shackle_socket}]) end,
