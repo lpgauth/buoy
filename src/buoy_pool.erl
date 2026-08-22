@@ -1,6 +1,11 @@
 -module(buoy_pool).
 -include("buoy_internal.hrl").
 
+-dialyzer({nowarn_function, lookup/3}).
+-ignore_xref([
+    {buoy_pool_foil, lookup, 1}
+]).
+
 -export([
     init/0,
     lookup/3,
@@ -21,13 +26,16 @@ init() ->
 -spec lookup(protocol_http(), hostname(), inet:port_number()) ->
     {ok, atom()} | {error, pool_not_started | buoy_not_started}.
 
+%% calls the foil-generated module directly: foil:lookup pays an
+%% extra dispatch through foil_modules on every request
 lookup(Protocol, Hostname, Port) ->
-    case foil:lookup(buoy_pool, {Protocol, Hostname, Port}) of
+    try buoy_pool_foil:lookup({Protocol, Hostname, Port}) of
         {ok, _} = R ->
             R;
         {error, key_not_found} ->
-            {error, pool_not_started};
-        {error, _} ->
+            {error, pool_not_started}
+    catch
+        error:undef ->
             {error, buoy_not_started}
     end.
 
