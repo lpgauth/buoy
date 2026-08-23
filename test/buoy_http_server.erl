@@ -51,13 +51,13 @@ init(Parent) ->
         register(?MODULE, self()),
         persistent_term:put({?MODULE, connections}, counters:new(1, [])),
         {ok, _} = application:ensure_all_started(ssl),
-        {ok, LSocket} = gen_tcp:listen(?PORT, ?LISTEN_OPTIONS),
+        {ok, LSocket} = listen(gen_tcp, ?PORT, ?LISTEN_OPTIONS),
         %% the default pkix_test_data key (secp112r2, sha1) is not
         %% negotiable by a modern TLS client
         KeyOpts = [{key, {namedCurve, secp256r1}}, {digest, sha256}],
         SslOptions = public_key:pkix_test_data(#{root => KeyOpts,
             peer => KeyOpts}),
-        {ok, LSocketSsl} = ssl:listen(?PORT_SSL,
+        {ok, LSocketSsl} = listen(ssl, ?PORT_SSL,
             ?LISTEN_OPTIONS ++ SslOptions),
         spawn_link(fun () -> accept_ssl(LSocketSsl) end),
         Parent ! {self(), started},
@@ -65,6 +65,22 @@ init(Parent) ->
     catch
         Class:Error:Stacktrace ->
             Parent ! {self(), {error, {Class, Error, Stacktrace}}}
+    end.
+
+%% the previous fixture's ports can linger briefly after its death:
+%% ERTS releases them asynchronously once the DOWN signal fires
+listen(Transport, Port, Options) ->
+    listen(Transport, Port, Options, 50).
+
+listen(Transport, Port, Options, Retries) ->
+    case Transport:listen(Port, Options) of
+        {ok, LSocket} ->
+            {ok, LSocket};
+        {error, eaddrinuse} when Retries > 0 ->
+            timer:sleep(10),
+            listen(Transport, Port, Options, Retries - 1);
+        {error, _} = E ->
+            E
     end.
 
 accept(LSocket) ->
