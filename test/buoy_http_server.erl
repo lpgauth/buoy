@@ -25,7 +25,9 @@ start() ->
     Pid = spawn(fun () -> init(Self) end),
     receive
         {Pid, started} ->
-            {ok, Pid}
+            {ok, Pid};
+        {Pid, {error, Reason}} ->
+            {error, Reason}
     after 5000 ->
         {error, timeout}
     end.
@@ -35,25 +37,35 @@ stop() ->
         undefined ->
             ok;
         Pid ->
+            Ref = monitor(process, Pid),
             exit(Pid, kill),
-            ok
+            receive
+                {'DOWN', Ref, process, Pid, _} ->
+                    ok
+            end
     end.
 
 %% private
 init(Parent) ->
-    register(?MODULE, self()),
-    persistent_term:put({?MODULE, connections}, counters:new(1, [])),
-    {ok, _} = application:ensure_all_started(ssl),
-    {ok, LSocket} = gen_tcp:listen(?PORT, ?LISTEN_OPTIONS),
-    %% the default pkix_test_data key (secp112r2, sha1) is not
-    %% negotiable by a modern TLS client
-    KeyOpts = [{key, {namedCurve, secp256r1}}, {digest, sha256}],
-    SslOptions = public_key:pkix_test_data(#{root => KeyOpts,
-        peer => KeyOpts}),
-    {ok, LSocketSsl} = ssl:listen(?PORT_SSL, ?LISTEN_OPTIONS ++ SslOptions),
-    spawn_link(fun () -> accept_ssl(LSocketSsl) end),
-    Parent ! {self(), started},
-    accept(LSocket).
+    try
+        register(?MODULE, self()),
+        persistent_term:put({?MODULE, connections}, counters:new(1, [])),
+        {ok, _} = application:ensure_all_started(ssl),
+        {ok, LSocket} = gen_tcp:listen(?PORT, ?LISTEN_OPTIONS),
+        %% the default pkix_test_data key (secp112r2, sha1) is not
+        %% negotiable by a modern TLS client
+        KeyOpts = [{key, {namedCurve, secp256r1}}, {digest, sha256}],
+        SslOptions = public_key:pkix_test_data(#{root => KeyOpts,
+            peer => KeyOpts}),
+        {ok, LSocketSsl} = ssl:listen(?PORT_SSL,
+            ?LISTEN_OPTIONS ++ SslOptions),
+        spawn_link(fun () -> accept_ssl(LSocketSsl) end),
+        Parent ! {self(), started},
+        accept(LSocket)
+    catch
+        Class:Error:Stacktrace ->
+            Parent ! {self(), {error, {Class, Error, Stacktrace}}}
+    end.
 
 accept(LSocket) ->
     {ok, Socket} = gen_tcp:accept(LSocket),
