@@ -93,11 +93,11 @@ ok
   </tr>
   <tr>
     <td>protocol</td>
-    <td>shackle_socket | shackle_tcp</td>
-    <td>shackle_tcp</td>
-    <td>shackle transport for http pools (shackle_socket runs on the
-    socket NIF and needs OTP 28+); https pools always use
-    shackle_ssl</td>
+    <td>shackle_socket | shackle_ssl | shackle_ssl_socket |
+    shackle_tcp</td>
+    <td>shackle_tcp (http) / shackle_ssl (https)</td>
+    <td>shackle transport; the socket variants run on the socket NIF
+    and need OTP 28+</td>
   </tr>
   <tr>
     <td>reconnect</td>
