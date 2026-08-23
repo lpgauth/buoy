@@ -130,5 +130,5 @@ pool_options(Options) ->
 
 shackle_protocol(http, Options) ->
     ?LOOKUP(protocol, Options, ?GET_ENV(protocol, shackle_tcp));
-shackle_protocol(https, _Options) ->
-    shackle_ssl.
+shackle_protocol(https, Options) ->
+    ?LOOKUP(protocol, Options, shackle_ssl).
