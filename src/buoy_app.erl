@@ -30,11 +30,12 @@ stop() ->
     {ok, pid()}.
 
 start(_StartType, _StartArgs) ->
+    persistent_term:put({buoy, telemetry},
+        ?GET_ENV(telemetry, true)),
     buoy_sup:start_link().
 
 -spec stop(term()) ->
     ok.
 
 stop(_State) ->
-    shackle_pool:terminate(),
     ok.

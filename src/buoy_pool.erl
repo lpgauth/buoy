@@ -1,6 +1,11 @@
 -module(buoy_pool).
 -include("buoy_internal.hrl").
 
+-dialyzer({nowarn_function, lookup/3}).
+-ignore_xref([
+    {buoy_pool_foil, lookup, 1}
+]).
+
 -export([
     init/0,
     lookup/3,
@@ -21,13 +26,16 @@ init() ->
 -spec lookup(protocol_http(), hostname(), inet:port_number()) ->
     {ok, atom()} | {error, pool_not_started | buoy_not_started}.
 
+%% calls the foil-generated module directly: foil:lookup pays an
+%% extra dispatch through foil_modules on every request
 lookup(Protocol, Hostname, Port) ->
-    case foil:lookup(buoy_pool, {Protocol, Hostname, Port}) of
+    try buoy_pool_foil:lookup({Protocol, Hostname, Port}) of
         {ok, _} = R ->
             R;
         {error, key_not_found} ->
-            {error, pool_not_started};
-        {error, _} ->
+            {error, pool_not_started}
+    catch
+        error:undef ->
             {error, buoy_not_started}
     end.
 
@@ -100,7 +108,7 @@ client_options(Protocol, Hostname, Port, Options) ->
 
     [{ip, binary_to_list(Hostname)},
      {port, Port},
-     {protocol, shackle_protocol(Protocol)},
+     {protocol, shackle_protocol(Protocol, Options)},
      {reconnect, Reconnect},
      {reconnect_time_max, ReconnectTimeMax},
      {reconnect_time_min, ReconnectTimeMin},
@@ -120,7 +128,7 @@ pool_options(Options) ->
      {pool_size, PoolSize},
      {pool_strategy, PoolStrategy}].
 
-shackle_protocol(http) ->
-    shackle_tcp;
-shackle_protocol(https) ->
-    shackle_ssl.
+shackle_protocol(http, Options) ->
+    ?LOOKUP(protocol, Options, ?GET_ENV(protocol, shackle_tcp));
+shackle_protocol(https, Options) ->
+    ?LOOKUP(protocol, Options, shackle_ssl).

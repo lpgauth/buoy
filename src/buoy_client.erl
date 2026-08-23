@@ -33,7 +33,7 @@ init(_Opts) ->
         queue = queue:new()
     }}.
 
--spec setup(inet:socket(), state()) ->
+-spec setup(shackle:socket(), state()) ->
     {ok, state()}.
 
 setup(_Socket, State) ->
@@ -65,7 +65,12 @@ handle_data(Data, #state {
         response = Response
     } = State) ->
 
-    Data2 = <<Buffer/binary, Data/binary>>,
+    Data2 = case Buffer of
+        <<>> ->
+            Data;
+        _ ->
+            <<Buffer/binary, Data/binary>>
+    end,
     case responses(Data2, Queue, Response, BinPatterns, []) of
         {ok, Queue2, Response2, Responses, Rest} ->
             {ok, Responses, State#state {
