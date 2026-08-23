@@ -1,6 +1,7 @@
 -module(buoy_http_server).
 
 -export([
+    connection_count/0,
     start/0,
     stop/0
 ]).
@@ -8,6 +9,9 @@
 -define(PORT, 8080).
 
 %% public
+connection_count() ->
+    counters:get(persistent_term:get({?MODULE, connections}), 1).
+
 start() ->
     Self = self(),
     Pid = spawn(fun () -> init(Self) end),
@@ -30,6 +34,7 @@ stop() ->
 %% private
 init(Parent) ->
     register(?MODULE, self()),
+    persistent_term:put({?MODULE, connections}, counters:new(1, [])),
     {ok, LSocket} = gen_tcp:listen(?PORT, [
         binary,
         {active, false},
@@ -42,6 +47,7 @@ init(Parent) ->
 
 accept(LSocket) ->
     {ok, Socket} = gen_tcp:accept(LSocket),
+    counters:add(persistent_term:get({?MODULE, connections}), 1, 1),
     Pid = spawn_link(fun () ->
         receive go -> connection(Socket) end
     end),

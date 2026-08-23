@@ -98,6 +98,7 @@ terminate() ->
 
 %% private
 client_options(Protocol, Hostname, Port, Options) ->
+    MaxRequests = ?LOOKUP(max_requests, Options, ?DEFAULT_MAX_REQUESTS),
     Reconnect = ?LOOKUP(reconnect, Options, ?DEFAULT_RECONNECT),
     ReconnectTimeMax = ?LOOKUP(reconnect_time_max, Options,
         ?DEFAULT_RECONNECT_MAX),
@@ -107,6 +108,7 @@ client_options(Protocol, Hostname, Port, Options) ->
         ?DEFAULT_SOCKET_OPTIONS),
 
     [{ip, binary_to_list(Hostname)},
+     {max_requests, MaxRequests},
      {port, Port},
      {protocol, shackle_protocol(Protocol, Options)},
      {reconnect, Reconnect},

@@ -45,6 +45,7 @@
 -type hostname()      :: binary().
 -type method()        :: get | head | post | put | {custom, binary()}.
 -type option()        :: {backlog_size, pos_integer()} |
+                         {max_requests, pos_integer() | infinity} |
                          {pool_size, pos_integer()} |
                          {pool_strategy, random | round_robin} |
                          {protocol, shackle_socket | shackle_tcp} |

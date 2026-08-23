@@ -73,6 +73,13 @@ ok
     <td>maximum number of concurrent requests per connection</td>
   </tr>
   <tr>
+    <td>max_requests</td>
+    <td>pos_integer() | infinity</td>
+    <td>infinity</td>
+    <td>number of requests after which a connection is closed and
+    reopened</td>
+  </tr>
+  <tr>
     <td>pool_size</td>
     <td>pos_integer()</td>
     <td>16</td>
