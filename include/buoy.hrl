@@ -48,7 +48,8 @@
                          {max_requests, pos_integer() | infinity} |
                          {pool_size, pos_integer()} |
                          {pool_strategy, random | round_robin} |
-                         {protocol, shackle_socket | shackle_tcp} |
+                         {protocol, shackle_socket | shackle_ssl |
+                                    shackle_ssl_socket | shackle_tcp} |
                          {reconnect, boolean()} |
                          {reconnect_time_max, pos_integer() | infinity} |
                          {reconnect_time_min, pos_integer()} |
