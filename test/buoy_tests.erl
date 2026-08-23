@@ -36,6 +36,14 @@ buoy_test_() ->
         fun telemetry_disabled_subtest/0
     ]}.
 
+buoy_max_requests_test_() ->
+    {setup,
+        fun () -> setup([{max_requests, 2}, {pool_size, 1}]) end,
+        fun (_) -> cleanup() end,
+    [
+        fun max_requests_subtest/0
+    ]}.
+
 buoy_socket_test_() ->
     case list_to_integer(erlang:system_info(otp_release)) >= 28 of
         true ->
@@ -67,6 +75,17 @@ get_subtest() ->
     {ok, ?RESP_1} = buoy:get(?URL(?URL_1), #{}),
     {ok, ?RESP_2} = buoy:get(?URL(?URL_2), #{}),
     {ok, ?RESP_4} = buoy:get(?URL(?URL_4), #{}).
+
+max_requests_subtest() ->
+    1 = buoy_http_server:connection_count(),
+    lists:foreach(fun (_) ->
+        {ok, ?RESP_1} = buoy:get(?URL(?URL_1), #{}),
+        {ok, ?RESP_1} = buoy:get(?URL(?URL_1), #{}),
+        %% recycling closes the socket after the 2nd response and
+        %% reconnects asynchronously; wait it out before the next pair
+        timer:sleep(100)
+    end, lists:seq(1, 3)),
+    true = buoy_http_server:connection_count() >= 3.
 
 pool_subtest() ->
     {error, pool_already_started} = buoy_pool:start(?URL(?URL_1)),
