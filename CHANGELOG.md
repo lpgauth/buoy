@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.3.1
+
+### Added
+
+- `max_requests` pool option (`pos_integer() | infinity`, default
+  `infinity`): number of requests after which a connection is closed
+  and reopened. Forwarded to shackle's client options.
+- End-to-end HTTPS tests; the eunit HTTP fixture now also serves TLS
+  and restarts race-free.
+
+### Changed
+
+- The `option()` type now lists every accepted `protocol` value
+  (`shackle_socket | shackle_ssl | shackle_ssl_socket | shackle_tcp`);
+  the ssl variants were accepted at runtime but missing from the type.
+
 ## 0.3.0
 
 ### Added
