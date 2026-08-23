@@ -1,5 +1,37 @@
 # Changelog
 
+## 0.3.0
+
+### Added
+
+- Socket protocol support: pools accept a `protocol` option (or the
+  `protocol` app env) so http pools can run on `shackle_socket`, the
+  socket NIF protocol introduced in shackle 0.7.4, instead of gen_tcp.
+  https pools accept the option too (`shackle_ssl` /
+  `shackle_ssl_socket`); defaults are unchanged. Pool setup and client
+  specs widen to `shackle:socket()`. `shackle_socket` needs OTP 27.3+
+  at runtime.
+- A `telemetry` app env gate: read once into a persistent_term at app
+  start, it disables event emission entirely, mirroring shackle. Saves
+  the emission cost in the caller hot path when telemetry is unused.
+
+### Changed
+
+- Upgrade shackle to 0.8.0.
+- `buoy_pool:lookup` calls the foil-generated module directly instead
+  of dispatching through `foil_modules`, halving the lookup cost on
+  every request. `buoy_client:handle_data` no longer rebuilds the
+  binary when the parse buffer is empty.
+
+### Fixed
+
+- `buoy_app:stop/1` no longer calls `shackle_pool:terminate()`, which
+  deleted the `shackle_pool` foil namespace while shackle was still
+  running. Any `shackle_pool:start` after a buoy restart in the same
+  VM silently lost its foil entries and every request failed with
+  `pool_not_started`. shackle's own `stop/1` already performs this
+  cleanup.
+
 ## 0.2.10
 
 ### Changed
