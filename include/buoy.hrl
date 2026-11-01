@@ -47,7 +47,7 @@
 -type option()        :: {backlog_size, pos_integer()} |
                          {max_requests, pos_integer() | infinity} |
                          {pool_size, pos_integer()} |
-                         {pool_strategy, random | round_robin} |
+                         {pool_strategy, power_of_two | random | round_robin} |
                          {protocol, shackle_socket | shackle_ssl |
                                     shackle_ssl_socket | shackle_tcp} |
                          {reconnect, boolean()} |

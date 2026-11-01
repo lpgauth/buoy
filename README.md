@@ -87,7 +87,7 @@ ok
   </tr>
   <tr>
     <td>pool_strategy</td>
-    <td>random | round_robin</td>
+    <td>power_of_two | random | round_robin</td>
     <td>random</td>
     <td>connection selection strategy</td>
   </tr>
